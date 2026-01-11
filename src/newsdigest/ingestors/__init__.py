@@ -1,12 +1,16 @@
 """Input source handlers for NewsDigest."""
 
 from newsdigest.ingestors.base import BaseIngestor
+from newsdigest.ingestors.rss import RSSParser
+from newsdigest.ingestors.text import TextIngestor
+from newsdigest.ingestors.url import URLFetcher
 
 __all__ = [
     "BaseIngestor",
-    # Ingestors will be exported as implemented:
-    # "URLFetcher",
-    # "RSSParser",
+    "URLFetcher",
+    "RSSParser",
+    "TextIngestor",
+    # Future ingestors:
     # "NewsAPIClient",
     # "EmailIngester",
     # "TwitterClient",

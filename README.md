@@ -4,6 +4,9 @@
 
 [![License: Polyform Small Business](https://img.shields.io/badge/License-Polyform%20Small%20Business-blue.svg)](./LICENSE.md)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
+[![Status: Alpha](https://img.shields.io/badge/status-alpha-orange.svg)]()
 
 ---
 
@@ -1217,6 +1220,90 @@ Because modern news really is that padded. This surprises people until they see 
 **Q: Can I trust the extraction?**
 
 Trust but verify. The tool makes extraction decisions that are usually right but not infallible. For important decisions, check original sources. The tool is for efficiency, not authority.
+
+---
+
+## Development
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/kase1111-hash/newsdigest.git
+cd newsdigest
+
+# Create and activate virtual environment
+make venv
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
+
+# Install development dependencies
+make install-dev
+
+# Download spaCy model
+make setup-models
+
+# Run tests
+make test
+
+# Run linting
+make lint
+```
+
+### Project Structure
+
+```
+newsdigest/
+├── src/newsdigest/     # Main package
+│   ├── cli/            # CLI commands
+│   ├── core/           # Extraction engine
+│   ├── analyzers/      # Semantic analyzers
+│   ├── ingestors/      # Input handlers
+│   ├── parsers/        # Content parsing
+│   ├── formatters/     # Output formatting
+│   ├── digest/         # Digest generation
+│   └── api/            # REST API
+├── tests/              # Test suite
+├── docs/               # Documentation
+└── docker/             # Docker configuration
+```
+
+### Common Commands
+
+```bash
+make test          # Run tests
+make test-cov      # Run tests with coverage
+make lint          # Run linter (ruff)
+make format        # Format code
+make type-check    # Run mypy
+make check         # Run all checks
+make docs-serve    # Serve documentation locally
+```
+
+### Docker Development
+
+```bash
+# Build and start API server
+make docker-up
+
+# View logs
+make docker-logs
+
+# Stop containers
+make docker-down
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run checks (`make check`)
+5. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+See [STYLE_GUIDE.md](./docs/STYLE_GUIDE.md) for coding conventions.
 
 ---
 

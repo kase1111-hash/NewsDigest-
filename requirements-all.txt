@@ -1,0 +1,27 @@
+# NewsDigest - All Dependencies (including optional)
+# Install with: pip install -r requirements-all.txt
+# Note: This includes ML dependencies which are large (~2GB)
+
+# Include dev dependencies (which includes core)
+-r requirements-dev.txt
+
+# API Server
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# Email
+aiosmtplib>=2.0.0
+
+# NewsAPI Integration
+newsapi-python>=0.2.7
+
+# Twitter/X Integration
+tweepy>=4.14.0
+
+# PDF Parsing
+pdfplumber>=0.10.0
+
+# Machine Learning (large dependencies)
+transformers>=4.35.0
+torch>=2.1.0
+sentence-transformers>=2.2.0
