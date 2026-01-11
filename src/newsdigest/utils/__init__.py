@@ -55,6 +55,21 @@ from newsdigest.utils.logging import (
     log_performance,
     setup_logging,
 )
+from newsdigest.utils.errors import (
+    ErrorContext,
+    ErrorReporter,
+    ErrorSeverity,
+    add_breadcrumb,
+    capture_errors,
+    capture_exception,
+    capture_message,
+    configure_error_reporting,
+    error_boundary,
+    format_exception,
+    get_error_context,
+    get_error_reporter,
+    get_exception_chain,
+)
 
 __all__ = [
     # HTTP utilities
@@ -108,4 +123,18 @@ __all__ = [
     "log_extraction_start",
     "log_extraction_complete",
     "log_error",
+    # Error reporting utilities
+    "ErrorSeverity",
+    "ErrorContext",
+    "ErrorReporter",
+    "get_error_context",
+    "get_error_reporter",
+    "configure_error_reporting",
+    "capture_exception",
+    "capture_message",
+    "add_breadcrumb",
+    "capture_errors",
+    "error_boundary",
+    "format_exception",
+    "get_exception_chain",
 ]

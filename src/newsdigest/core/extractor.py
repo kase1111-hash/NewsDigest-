@@ -28,6 +28,7 @@ from newsdigest.formatters import JSONFormatter, MarkdownFormatter, TextFormatte
 from newsdigest.ingestors import RSSParser, TextIngestor, URLFetcher
 from newsdigest.parsers import ArticleExtractor
 from newsdigest.utils.logging import get_logger, log_extraction_complete, log_extraction_start
+from newsdigest.utils.errors import add_breadcrumb, capture_exception, ErrorSeverity
 
 # Module logger
 logger = get_logger(__name__)
@@ -122,13 +123,29 @@ class Extractor:
         # Determine source type for logging
         source_type = "url" if self._is_url(source) else "text"
         log_extraction_start(logger, source, source_type)
+        add_breadcrumb(
+            f"Starting extraction from {source_type}",
+            category="extraction",
+            data={"source": source[:100] if source else None},
+        )
 
         try:
             # Determine source type and ingest
             article = await self._ingest_source(source)
             logger.debug(f"Ingested article: {article.id}, {article.word_count} words")
+            add_breadcrumb(
+                f"Ingested article: {article.id}",
+                category="extraction",
+                data={"word_count": article.word_count},
+            )
         except Exception as e:
             logger.error(f"Failed to ingest source: {e}", exc_info=True)
+            capture_exception(
+                e,
+                severity=ErrorSeverity.ERROR,
+                extra={"source": source[:100] if source else None, "source_type": source_type},
+                tags={"operation": "ingest"},
+            )
             if isinstance(e, IngestError):
                 raise
             raise IngestError(
@@ -149,10 +166,24 @@ class Extractor:
                 result.statistics.compressed_words,
                 len(result.claims),
             )
+            add_breadcrumb(
+                "Extraction complete",
+                category="extraction",
+                data={
+                    "compression": f"{result.statistics.compression_ratio:.1%}",
+                    "claims": len(result.claims),
+                },
+            )
 
             return result
         except Exception as e:
             logger.error(f"Failed to extract content: {e}", exc_info=True)
+            capture_exception(
+                e,
+                severity=ErrorSeverity.ERROR,
+                extra={"article_id": article.id, "source": source[:100] if source else None},
+                tags={"operation": "extraction"},
+            )
             if isinstance(e, ExtractionError):
                 raise
             raise ExtractionError(
@@ -205,6 +236,12 @@ class Extractor:
                     try:
                         return await self.extract(src)
                     except Exception as e:
+                        capture_exception(
+                            e,
+                            severity=ErrorSeverity.WARNING if not fail_fast else ErrorSeverity.ERROR,
+                            extra={"source": src[:100] if src else None},
+                            tags={"operation": "batch_extraction"},
+                        )
                         if fail_fast:
                             raise ExtractionError(
                                 f"Batch extraction failed: {e}",
@@ -223,6 +260,12 @@ class Extractor:
                     result = await self.extract(src)
                     results.append(result)
                 except Exception as e:
+                    capture_exception(
+                        e,
+                        severity=ErrorSeverity.WARNING if not fail_fast else ErrorSeverity.ERROR,
+                        extra={"source": src[:100] if src else None},
+                        tags={"operation": "batch_extraction"},
+                    )
                     if fail_fast:
                         raise ExtractionError(
                             f"Batch extraction failed: {e}",
