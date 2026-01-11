@@ -1,0 +1,242 @@
+# NewsDigest - Semantic compression engine for news
+# https://github.com/kase1111-hash/NewsDigest
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "newsdigest"
+version = "0.1.0"
+description = "Semantic compression engine for news - extract signal from noise"
+readme = "README.md"
+license = {text = "Polyform Small Business License 1.0.0"}
+requires-python = ">=3.11"
+authors = [
+    {name = "NewsDigest Team"}
+]
+keywords = [
+    "news",
+    "nlp",
+    "text-extraction",
+    "summarization",
+    "semantic-analysis",
+    "content-compression",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    # CLI
+    "click>=8.1.0",
+    "rich>=13.0.0",
+
+    # HTTP
+    "httpx>=0.25.0",
+    "tenacity>=8.2.0",
+
+    # HTML/XML Parsing
+    "beautifulsoup4>=4.12.0",
+    "lxml>=4.9.0",
+    "readability-lxml>=0.8.0",
+    "feedparser>=6.0.0",
+
+    # NLP
+    "spacy>=3.7.0",
+
+    # Configuration
+    "pyyaml>=6.0.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0",
+
+    # Utilities
+    "python-dateutil>=2.8.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+]
+
+email = [
+    "aiosmtplib>=2.0.0",
+]
+
+newsapi = [
+    "newsapi-python>=0.2.7",
+]
+
+twitter = [
+    "tweepy>=4.14.0",
+]
+
+pdf = [
+    "pdfplumber>=0.10.0",
+]
+
+ml = [
+    "transformers>=4.35.0",
+    "torch>=2.1.0",
+    "sentence-transformers>=2.2.0",
+]
+
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.6.0",
+    "types-PyYAML>=6.0.0",
+]
+
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.24.0",
+]
+
+full = [
+    "newsdigest[api,email,newsapi,twitter,pdf]",
+]
+
+all = [
+    "newsdigest[full,ml,dev,docs]",
+]
+
+[project.scripts]
+newsdigest = "newsdigest.cli.main:cli"
+
+[project.urls]
+Homepage = "https://github.com/kase1111-hash/NewsDigest"
+Documentation = "https://docs.newsdigest.dev"
+Repository = "https://github.com/kase1111-hash/NewsDigest"
+Issues = "https://github.com/kase1111-hash/NewsDigest/issues"
+
+# ============================================================================
+# Tool Configuration
+# ============================================================================
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+newsdigest = ["py.typed"]
+
+# ----------------------------------------------------------------------------
+# mypy - Static Type Checker
+# ----------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_configs = true
+show_error_codes = true
+show_column_numbers = true
+
+# Per-module settings
+[[tool.mypy.overrides]]
+module = [
+    "feedparser.*",
+    "readability.*",
+    "spacy.*",
+    "bs4.*",
+    "lxml.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+# ----------------------------------------------------------------------------
+# pytest - Testing Framework
+# ----------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+# ----------------------------------------------------------------------------
+# coverage - Test Coverage
+# ----------------------------------------------------------------------------
+
+[tool.coverage.run]
+source = ["src/newsdigest"]
+branch = true
+parallel = true
+omit = [
+    "*/__pycache__/*",
+    "*/tests/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "@abstractmethod",
+]
+fail_under = 80
+show_missing = true
+skip_covered = true
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# ----------------------------------------------------------------------------
+# bandit - Security Linter
+# ----------------------------------------------------------------------------
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv"]
+skips = ["B101"]  # Allow assert in non-test code (we use for invariants)
+
+# ----------------------------------------------------------------------------
+# ruff - see ruff.toml for full configuration
+# ----------------------------------------------------------------------------
+
+[tool.ruff]
+extend = "ruff.toml"
