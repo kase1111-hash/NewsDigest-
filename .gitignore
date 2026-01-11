@@ -1,0 +1,267 @@
+# ============================================================================
+# NewsDigest .gitignore
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.*
+!.env.example
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ruff
+.ruff_cache/
+
+# ----------------------------------------------------------------------------
+# IDE / Editors
+# ----------------------------------------------------------------------------
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ----------------------------------------------------------------------------
+# OS generated files
+# ----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ----------------------------------------------------------------------------
+# Project-specific
+# ----------------------------------------------------------------------------
+
+# NewsDigest data directory
+.newsdigest/
+
+# Local configuration (may contain secrets)
+config.local.yml
+config.*.yml
+!config.example.yml
+
+# Logs
+logs/
+*.log
+
+# Cache
+cache/
+.cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# spaCy models (downloaded separately)
+models/
+
+# Test artifacts
+.test_output/
+test_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Secrets and credentials
+*.pem
+*.key
+credentials.json
+secrets.yml
+secrets.yaml
+
+# ----------------------------------------------------------------------------
+# Build artifacts
+# ----------------------------------------------------------------------------
+
+# Docker
+docker-compose.override.yml
+
+# Compiled static files
+staticfiles/
+
+# ----------------------------------------------------------------------------
+# Documentation build
+# ----------------------------------------------------------------------------
+
+# Sphinx
+docs/_build/
+docs/api/
+
+# MkDocs
+site/

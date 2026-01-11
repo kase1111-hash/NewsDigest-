@@ -3,7 +3,7 @@ Foundation & Planning
  ✅ Define user stories & acceptance criteria
  ✅ Choose tech stack & dependencies
  ✅ Design architecture (system, data flow, API)
- Initialize version control (Git)
+ ✅ Initialize version control (Git)
  Set up project structure (src/, tests/, docs/)
  Define coding conventions & style guide
  Create dependency manifest (package.json, requirements.txt)
