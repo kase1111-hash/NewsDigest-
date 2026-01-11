@@ -1,6 +1,6 @@
 Foundation & Planning
  ✅ Review spec sheet & confirm requirements
- Define user stories & acceptance criteria
+ ✅ Define user stories & acceptance criteria
  Choose tech stack & dependencies
  Design architecture (system, data flow, API)
  Initialize version control (Git)
