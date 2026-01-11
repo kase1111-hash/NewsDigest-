@@ -1,16 +1,23 @@
 """Semantic analysis modules for NewsDigest."""
 
 from newsdigest.analyzers.base import BaseAnalyzer
+from newsdigest.analyzers.claims import ClaimExtractor
+from newsdigest.analyzers.emotional import EmotionalDetector
+from newsdigest.analyzers.filler import FillerDetector
+from newsdigest.analyzers.novelty import NoveltyScorer
+from newsdigest.analyzers.quotes import QuoteIsolator
+from newsdigest.analyzers.repetition import RepetitionCollapser
+from newsdigest.analyzers.sources import SourceValidator
+from newsdigest.analyzers.speculation import SpeculationStripper
 
 __all__ = [
     "BaseAnalyzer",
-    # Analyzers will be exported as implemented:
-    # "FillerDetector",
-    # "SpeculationStripper",
-    # "EmotionalDetector",
-    # "SourceValidator",
-    # "RepetitionCollapser",
-    # "NoveltyScorer",
-    # "ClaimExtractor",
-    # "QuoteIsolator",
+    "FillerDetector",
+    "SpeculationStripper",
+    "EmotionalDetector",
+    "SourceValidator",
+    "RepetitionCollapser",
+    "NoveltyScorer",
+    "ClaimExtractor",
+    "QuoteIsolator",
 ]

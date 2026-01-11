@@ -1,13 +1,16 @@
 """Output formatters for NewsDigest."""
 
 from newsdigest.formatters.base import BaseFormatter
+from newsdigest.formatters.json import JSONFormatter
+from newsdigest.formatters.markdown import MarkdownFormatter
+from newsdigest.formatters.text import TextFormatter
 
 __all__ = [
     "BaseFormatter",
-    # Formatters will be exported as implemented:
-    # "MarkdownFormatter",
-    # "JSONFormatter",
+    "MarkdownFormatter",
+    "JSONFormatter",
+    "TextFormatter",
+    # Future formatters:
     # "HTMLFormatter",
-    # "TextFormatter",
     # "EmailFormatter",
 ]

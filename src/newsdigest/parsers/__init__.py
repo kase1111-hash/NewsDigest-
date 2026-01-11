@@ -1,8 +1,11 @@
 """Content parsing modules for NewsDigest."""
 
+from newsdigest.parsers.article import ArticleExtractor
+from newsdigest.parsers.html import HTMLCleaner
+from newsdigest.parsers.metadata import MetadataParser
+
 __all__ = [
-    # Parsers will be exported as implemented:
-    # "HTMLCleaner",
-    # "ArticleExtractor",
-    # "MetadataParser",
+    "HTMLCleaner",
+    "ArticleExtractor",
+    "MetadataParser",
 ]
