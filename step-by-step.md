@@ -1,5 +1,5 @@
 Foundation & Planning
- Review spec sheet & confirm requirements
+ ✅ Review spec sheet & confirm requirements
  Define user stories & acceptance criteria
  Choose tech stack & dependencies
  Design architecture (system, data flow, API)
