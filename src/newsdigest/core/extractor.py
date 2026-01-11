@@ -16,6 +16,14 @@ from newsdigest.core.result import (
     RemovalReason,
     Sentence,
 )
+from newsdigest.exceptions import (
+    ContentExtractionError,
+    ExtractionError,
+    FetchError,
+    FormatterError,
+    IngestError,
+    PipelineError,
+)
 from newsdigest.formatters import JSONFormatter, MarkdownFormatter, TextFormatter
 from newsdigest.ingestors import RSSParser, TextIngestor, URLFetcher
 from newsdigest.parsers import ArticleExtractor
@@ -101,12 +109,35 @@ class Extractor:
 
         Returns:
             ExtractionResult with compressed content and statistics.
-        """
-        # Determine source type and ingest
-        article = await self._ingest_source(source)
 
-        # Process through pipeline
-        return self._process_article(article)
+        Raises:
+            IngestError: If content cannot be fetched or parsed.
+            ExtractionError: If content cannot be processed.
+            PipelineError: If NLP pipeline fails.
+        """
+        try:
+            # Determine source type and ingest
+            article = await self._ingest_source(source)
+        except Exception as e:
+            if isinstance(e, IngestError):
+                raise
+            raise IngestError(
+                f"Failed to ingest source: {e}",
+                cause=e,
+                details={"source": source[:100] if source else None},
+            )
+
+        try:
+            # Process through pipeline
+            return self._process_article(article)
+        except Exception as e:
+            if isinstance(e, ExtractionError):
+                raise
+            raise ExtractionError(
+                f"Failed to extract content: {e}",
+                cause=e,
+                details={"article_id": article.id},
+            )
 
     def extract_sync(self, source: str) -> ExtractionResult:
         """Synchronous version of extract.
@@ -116,6 +147,10 @@ class Extractor:
 
         Returns:
             ExtractionResult with compressed content and statistics.
+
+        Raises:
+            IngestError: If content cannot be fetched or parsed.
+            ExtractionError: If content cannot be processed.
         """
         return asyncio.run(self.extract(source))
 
@@ -124,6 +159,7 @@ class Extractor:
         sources: List[str],
         parallel: bool = True,
         max_workers: int = 5,
+        fail_fast: bool = False,
     ) -> List[ExtractionResult]:
         """Extract content from multiple sources.
 
@@ -131,9 +167,13 @@ class Extractor:
             sources: List of URLs or text content.
             parallel: Whether to process in parallel.
             max_workers: Maximum concurrent workers.
+            fail_fast: If True, raise on first error. Otherwise, skip failures.
 
         Returns:
-            List of ExtractionResult objects.
+            List of ExtractionResult objects (failed extractions excluded unless fail_fast).
+
+        Raises:
+            ExtractionError: If fail_fast is True and any extraction fails.
         """
         if parallel:
             semaphore = asyncio.Semaphore(max_workers)
@@ -142,19 +182,31 @@ class Extractor:
                 async with semaphore:
                     try:
                         return await self.extract(src)
-                    except Exception:
+                    except Exception as e:
+                        if fail_fast:
+                            raise ExtractionError(
+                                f"Batch extraction failed: {e}",
+                                cause=e,
+                                details={"source": src[:100] if src else None},
+                            )
                         return None
 
             tasks = [extract_one(src) for src in sources]
-            results = await asyncio.gather(*tasks)
-            return [r for r in results if r is not None]
+            results = await asyncio.gather(*tasks, return_exceptions=not fail_fast)
+            return [r for r in results if r is not None and not isinstance(r, Exception)]
         else:
             results = []
             for src in sources:
                 try:
                     result = await self.extract(src)
                     results.append(result)
-                except Exception:
+                except Exception as e:
+                    if fail_fast:
+                        raise ExtractionError(
+                            f"Batch extraction failed: {e}",
+                            cause=e,
+                            details={"source": src[:100] if src else None},
+                        )
                     continue
             return results
 
