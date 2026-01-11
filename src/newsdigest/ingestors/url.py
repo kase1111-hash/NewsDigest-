@@ -9,6 +9,11 @@ import httpx
 from newsdigest.core.article import Article, SourceType
 from newsdigest.ingestors.base import BaseIngestor
 from newsdigest.parsers.article import ArticleExtractor
+from newsdigest.utils.validation import (
+    ValidationError,
+    sanitize_html,
+    validate_url_strict,
+)
 
 
 class URLFetcher(BaseIngestor):
@@ -21,6 +26,8 @@ class URLFetcher(BaseIngestor):
     - Rate limiting per domain
     - Timeout handling
     - Retry with exponential backoff
+    - Input URL validation
+    - HTML sanitization
     """
 
     DEFAULT_USER_AGENT = (
@@ -52,10 +59,18 @@ class URLFetcher(BaseIngestor):
             Article object with content and metadata.
 
         Raises:
+            ValidationError: If URL is invalid.
             httpx.HTTPError: If fetch fails after retries.
         """
-        html = await self._fetch_with_retry(source)
-        article = self._article_extractor.extract(html, source)
+        # Validate URL before fetching
+        validated_url = validate_url_strict(source)
+
+        html = await self._fetch_with_retry(validated_url)
+
+        # Sanitize HTML before parsing
+        html = sanitize_html(html)
+
+        article = self._article_extractor.extract(html, validated_url)
         article.source_type = SourceType.URL
         return article
 

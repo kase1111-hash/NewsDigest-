@@ -27,6 +27,24 @@ from newsdigest.utils.text import (
     word_count,
     word_in_set,
 )
+from newsdigest.utils.validation import (
+    SanitizationError,
+    ValidationError,
+    is_valid_url,
+    sanitize_html,
+    sanitize_text,
+    validate_article_content,
+    validate_article_title,
+    validate_enum,
+    validate_extraction_mode,
+    validate_feed_item_count,
+    validate_feed_url,
+    validate_positive_int,
+    validate_range,
+    validate_text_content,
+    validate_url,
+    validate_url_strict,
+)
 
 __all__ = [
     # HTTP utilities
@@ -54,4 +72,21 @@ __all__ = [
     "has_excessive_punctuation",
     "extract_quoted_content",
     "remove_words",
+    # Validation utilities
+    "ValidationError",
+    "SanitizationError",
+    "validate_url",
+    "validate_url_strict",
+    "is_valid_url",
+    "sanitize_text",
+    "sanitize_html",
+    "validate_text_content",
+    "validate_range",
+    "validate_positive_int",
+    "validate_enum",
+    "validate_extraction_mode",
+    "validate_feed_url",
+    "validate_feed_item_count",
+    "validate_article_content",
+    "validate_article_title",
 ]
