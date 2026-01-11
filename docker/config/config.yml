@@ -1,0 +1,69 @@
+# NewsDigest Configuration
+# This is a sample configuration file for Docker deployment
+# Copy to config.yml and customize as needed
+
+version: 1
+
+# =============================================================================
+# Sources
+# =============================================================================
+sources:
+  - type: rss
+    url: https://feeds.reuters.com/reuters/topNews
+    name: Reuters Top News
+    category: world
+    enabled: true
+
+  - type: rss
+    url: https://rss.nytimes.com/services/xml/rss/nyt/World.xml
+    name: NYT World
+    category: world
+    enabled: true
+
+  - type: rss
+    url: https://hnrss.org/frontpage
+    name: Hacker News
+    category: technology
+    enabled: true
+
+# =============================================================================
+# Extraction Settings
+# =============================================================================
+extraction:
+  mode: standard
+  min_sentence_density: 0.3
+  unnamed_sources: flag
+  speculation: remove
+  max_hedges_per_sentence: 2
+  emotional_language: remove
+
+# =============================================================================
+# Digest Settings
+# =============================================================================
+digest:
+  period: 24h
+  max_items: 100
+  clustering_enabled: true
+  deduplication_enabled: true
+  similarity_threshold: 0.85
+  min_novelty_score: 0.3
+
+# =============================================================================
+# Output Settings
+# =============================================================================
+output:
+  format: markdown
+  show_stats: true
+  include_links: true
+  show_warnings: true
+
+# =============================================================================
+# Advanced Settings
+# =============================================================================
+spacy_model: en_core_web_sm
+http_timeout: 30
+http_retries: 3
+requests_per_second: 1.0
+cache_enabled: true
+cache_ttl: 3600
+cache_max_size: 1000

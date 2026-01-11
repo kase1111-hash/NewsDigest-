@@ -1,0 +1,69 @@
+# Docker ignore file for NewsDigest
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv
+venv
+env
+.eggs
+*.egg-info
+*.egg
+
+# IDE
+.idea
+.vscode
+*.sublime-*
+*.swp
+*.swo
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov
+.tox
+.nox
+
+# Type checking
+.mypy_cache
+.ruff_cache
+
+# Build
+build
+dist
+
+# Documentation
+site
+docs/_build
+
+# Local config (use Docker volumes instead)
+.env
+*.local.yml
+config.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Logs and data
+*.log
+logs/
+data/
+.newsdigest/
+
+# Test fixtures (large files)
+tests/fixtures/articles/*.html
+
+# Notebooks
+*.ipynb
+.ipynb_checkpoints
