@@ -1,10 +1,16 @@
 """Emotional language detector for NewsDigest."""
 
-import re
 from typing import List, Set
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence, SentenceCategory
+from newsdigest.utils.text import (
+    has_excessive_punctuation,
+    has_meaningful_content,
+    is_all_caps,
+    remove_words,
+    strip_punctuation,
+)
 
 
 # Emotional activation words
@@ -177,13 +183,13 @@ class EmotionalDetector(BaseAnalyzer):
 
                 if self.mode == "remove" and emotional_words:
                     # Remove emotional words but keep factual content
-                    cleaned_text = self._remove_emotional_words(
-                        sentence.text, emotional_words
-                    )
-                    self.words_removed += len(emotional_words)
+                    # Filter out markers like [CAPS], [PUNCTUATION]
+                    words_to_remove = [w for w in emotional_words if not w.startswith("[")]
+                    cleaned_text = remove_words(sentence.text, words_to_remove)
+                    self.words_removed += len(words_to_remove)
 
-                    # Check if anything meaningful remains
-                    if not self._has_meaningful_content(cleaned_text):
+                    # Check if anything meaningful remains (uses shared utility)
+                    if not has_meaningful_content(cleaned_text, min_content_words=2):
                         sentence.keep = False
                         sentence.removal_reason = (
                             RemovalReason.EMOTIONAL_ACTIVATION.value
@@ -212,9 +218,9 @@ class EmotionalDetector(BaseAnalyzer):
 
         emotional_found = []
 
-        # Check individual words
+        # Check individual words (using shared strip_punctuation utility)
         for word in words:
-            clean_word = word.strip(".,!?;:'\"").lower()
+            clean_word = strip_punctuation(word).lower()
             if clean_word in self._emotional_words:
                 emotional_found.append(word)
 
@@ -223,15 +229,12 @@ class EmotionalDetector(BaseAnalyzer):
             if urgency in text:
                 emotional_found.append(urgency)
 
-        # Check for ALL CAPS (strong emotional indicator)
-        caps_words = [w for w in words if w.isupper() and len(w) > 2]
-        all_caps_ratio = len(caps_words) / word_count if word_count > 0 else 0
-        if all_caps_ratio > 0.3:
-            # More than 30% caps suggests emotional shouting
+        # Check for ALL CAPS (using shared utility)
+        if is_all_caps(sentence.text, threshold=0.3):
             emotional_found.append("[CAPS]")
 
-        # Check for excessive punctuation (!!!, ???)
-        if re.search(r"[!?]{2,}", sentence.text):
+        # Check for excessive punctuation (using shared utility)
+        if has_excessive_punctuation(sentence.text):
             emotional_found.append("[PUNCTUATION]")
 
         # Calculate score
@@ -248,125 +251,6 @@ class EmotionalDetector(BaseAnalyzer):
         total_score = min(1.0, base_score * 3 + bonus)  # Scale up base score
 
         return round(total_score, 2), emotional_found
-
-    def _remove_emotional_words(self, text: str, words_to_remove: List[str]) -> str:
-        """Remove emotional words from text.
-
-        Args:
-            text: Original text.
-            words_to_remove: Words to remove.
-
-        Returns:
-            Cleaned text.
-        """
-        result = text
-        for word in words_to_remove:
-            if word.startswith("["):
-                # Skip markers like [CAPS], [PUNCTUATION]
-                continue
-            # Remove word with surrounding whitespace normalization
-            pattern = rf"\b{re.escape(word)}\b"
-            result = re.sub(pattern, "", result, flags=re.IGNORECASE)
-
-        # Clean up extra whitespace
-        result = re.sub(r"\s+", " ", result).strip()
-
-        # Fix punctuation after removal
-        result = re.sub(r"\s+([.,!?;:])", r"\1", result)
-        result = re.sub(r"([.,!?;:])\s*([.,!?;:])", r"\1", result)
-
-        return result
-
-    def _has_meaningful_content(self, text: str) -> bool:
-        """Check if text has meaningful content after word removal.
-
-        Args:
-            text: Text to check.
-
-        Returns:
-            True if meaningful content remains.
-        """
-        # Remove punctuation for check
-        clean = re.sub(r"[^\w\s]", "", text).strip()
-        words = clean.split()
-
-        # Need at least 3 words for meaningful content
-        if len(words) < 3:
-            return False
-
-        # Check for at least one noun/verb (simple heuristic)
-        # In production, would use POS tags from NLP
-        stop_words = {
-            "the",
-            "a",
-            "an",
-            "is",
-            "are",
-            "was",
-            "were",
-            "be",
-            "been",
-            "being",
-            "have",
-            "has",
-            "had",
-            "do",
-            "does",
-            "did",
-            "will",
-            "would",
-            "could",
-            "should",
-            "may",
-            "might",
-            "must",
-            "shall",
-            "can",
-            "to",
-            "of",
-            "in",
-            "for",
-            "on",
-            "with",
-            "at",
-            "by",
-            "from",
-            "as",
-            "into",
-            "through",
-            "during",
-            "before",
-            "after",
-            "above",
-            "below",
-            "between",
-            "under",
-            "again",
-            "further",
-            "then",
-            "once",
-            "and",
-            "but",
-            "or",
-            "nor",
-            "so",
-            "yet",
-            "both",
-            "either",
-            "neither",
-            "not",
-            "only",
-            "own",
-            "same",
-            "than",
-            "too",
-            "very",
-            "just",
-            "also",
-        }
-
-        content_words = [w.lower() for w in words if w.lower() not in stop_words]
-        return len(content_words) >= 2
 
     def get_emotional_word_count(self) -> int:
         """Get count of emotional words removed.
