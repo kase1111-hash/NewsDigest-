@@ -27,6 +27,10 @@ from newsdigest.exceptions import (
 from newsdigest.formatters import JSONFormatter, MarkdownFormatter, TextFormatter
 from newsdigest.ingestors import RSSParser, TextIngestor, URLFetcher
 from newsdigest.parsers import ArticleExtractor
+from newsdigest.utils.logging import get_logger, log_extraction_complete, log_extraction_start
+
+# Module logger
+logger = get_logger(__name__)
 
 
 class Extractor:
@@ -115,10 +119,16 @@ class Extractor:
             ExtractionError: If content cannot be processed.
             PipelineError: If NLP pipeline fails.
         """
+        # Determine source type for logging
+        source_type = "url" if self._is_url(source) else "text"
+        log_extraction_start(logger, source, source_type)
+
         try:
             # Determine source type and ingest
             article = await self._ingest_source(source)
+            logger.debug(f"Ingested article: {article.id}, {article.word_count} words")
         except Exception as e:
+            logger.error(f"Failed to ingest source: {e}", exc_info=True)
             if isinstance(e, IngestError):
                 raise
             raise IngestError(
@@ -129,8 +139,20 @@ class Extractor:
 
         try:
             # Process through pipeline
-            return self._process_article(article)
+            result = self._process_article(article)
+
+            # Log completion
+            log_extraction_complete(
+                logger,
+                source,
+                result.statistics.original_words,
+                result.statistics.compressed_words,
+                len(result.claims),
+            )
+
+            return result
         except Exception as e:
+            logger.error(f"Failed to extract content: {e}", exc_info=True)
             if isinstance(e, ExtractionError):
                 raise
             raise ExtractionError(

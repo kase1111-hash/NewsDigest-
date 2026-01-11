@@ -45,6 +45,16 @@ from newsdigest.utils.validation import (
     validate_url,
     validate_url_strict,
 )
+from newsdigest.utils.logging import (
+    LoggedOperation,
+    get_logger,
+    init_logging,
+    log_error,
+    log_extraction_complete,
+    log_extraction_start,
+    log_performance,
+    setup_logging,
+)
 
 __all__ = [
     # HTTP utilities
@@ -89,4 +99,13 @@ __all__ = [
     "validate_feed_item_count",
     "validate_article_content",
     "validate_article_title",
+    # Logging utilities
+    "setup_logging",
+    "get_logger",
+    "init_logging",
+    "log_performance",
+    "LoggedOperation",
+    "log_extraction_start",
+    "log_extraction_complete",
+    "log_error",
 ]
