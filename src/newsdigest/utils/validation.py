@@ -9,8 +9,9 @@ This module provides comprehensive input validation to ensure:
 
 import html
 import re
-from typing import Any, List, Optional, Tuple
+from typing import Any
 from urllib.parse import urlparse
+
 
 # =============================================================================
 # CONSTANTS
@@ -58,7 +59,7 @@ DANGEROUS_HTML_PATTERNS = [
 class ValidationError(ValueError):
     """Raised when input validation fails."""
 
-    def __init__(self, message: str, field: Optional[str] = None) -> None:
+    def __init__(self, message: str, field: str | None = None) -> None:
         """Initialize validation error.
 
         Args:
@@ -81,7 +82,7 @@ class SanitizationError(ValueError):
 # =============================================================================
 
 
-def validate_url(url: str, allow_private: bool = False) -> Tuple[bool, Optional[str]]:
+def validate_url(url: str, allow_private: bool = False) -> tuple[bool, str | None]:
     """Validate a URL for safety and correctness.
 
     Args:
@@ -166,7 +167,7 @@ def is_valid_url(url: str) -> bool:
 
 def sanitize_text(
     text: str,
-    max_length: Optional[int] = None,
+    max_length: int | None = None,
     strip_html: bool = True,
     normalize_whitespace: bool = True,
 ) -> str:
@@ -218,7 +219,7 @@ def sanitize_text(
     return text
 
 
-def sanitize_html(html_content: str, max_length: Optional[int] = None) -> str:
+def sanitize_html(html_content: str, max_length: int | None = None) -> str:
     """Sanitize HTML content by removing dangerous elements.
 
     Args:
@@ -249,7 +250,7 @@ def validate_text_content(
     min_length: int = 0,
     max_length: int = MAX_TEXT_LENGTH,
     require_content: bool = False,
-) -> Tuple[bool, Optional[str]]:
+) -> tuple[bool, str | None]:
     """Validate text content.
 
     Args:
@@ -286,8 +287,8 @@ def validate_text_content(
 
 def validate_range(
     value: Any,
-    min_val: Optional[float] = None,
-    max_val: Optional[float] = None,
+    min_val: float | None = None,
+    max_val: float | None = None,
     name: str = "value",
 ) -> float:
     """Validate a numeric value is within range.
@@ -342,7 +343,7 @@ def validate_positive_int(value: Any, name: str = "value") -> int:
     return int_value
 
 
-def validate_enum(value: Any, allowed: List[Any], name: str = "value") -> Any:
+def validate_enum(value: Any, allowed: list[Any], name: str = "value") -> Any:
     """Validate value is one of allowed values.
 
     Args:

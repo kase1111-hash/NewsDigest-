@@ -5,9 +5,9 @@ remains consistent across changes.
 """
 
 import json
-import pytest
 from dataclasses import dataclass
-from typing import List, Optional
+
+import pytest
 
 from newsdigest.core.extractor import Extractor
 from newsdigest.core.result import ExtractionResult
@@ -26,7 +26,7 @@ class GoldenTestCase:
     expect_filler_detection: bool  # Should detect filler
     expect_sources_detected: bool  # Should detect sources
     min_facts_preserved: int  # Minimum number of key facts to preserve
-    key_facts: List[str]  # Key facts that should be preserved
+    key_facts: list[str]  # Key facts that should be preserved
 
 
 # =============================================================================

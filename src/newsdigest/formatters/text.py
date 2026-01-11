@@ -1,6 +1,6 @@
 """Plain text formatter for NewsDigest."""
 
-from typing import Any, Optional
+from typing import Any
 
 from newsdigest.core.result import ExtractionResult
 from newsdigest.formatters.base import BaseFormatter
@@ -12,7 +12,7 @@ class TextFormatter(BaseFormatter):
     Provides clean, readable text output without Markdown formatting.
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize text formatter.
 
         Args:

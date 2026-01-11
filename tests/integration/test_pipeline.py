@@ -6,7 +6,6 @@ These tests verify that multiple components work together correctly.
 import pytest
 
 from newsdigest.config.settings import Config
-from newsdigest.core.article import Article, SourceType
 from newsdigest.core.extractor import Extractor
 from newsdigest.core.result import ExtractionResult
 

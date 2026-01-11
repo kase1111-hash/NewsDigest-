@@ -1,7 +1,6 @@
 """URL fetcher for NewsDigest."""
 
 import asyncio
-from typing import List, Optional
 from urllib.parse import urlparse
 
 import httpx
@@ -10,7 +9,6 @@ from newsdigest.core.article import Article, SourceType
 from newsdigest.ingestors.base import BaseIngestor
 from newsdigest.parsers.article import ArticleExtractor
 from newsdigest.utils.validation import (
-    ValidationError,
     sanitize_html,
     validate_url_strict,
 )
@@ -34,7 +32,7 @@ class URLFetcher(BaseIngestor):
         "Mozilla/5.0 (compatible; NewsDigest/0.1; +https://github.com/newsdigest)"
     )
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize URL fetcher.
 
         Args:
@@ -76,9 +74,9 @@ class URLFetcher(BaseIngestor):
 
     async def ingest_batch(
         self,
-        sources: List[str],
+        sources: list[str],
         max_concurrent: int = 5,
-    ) -> List[Article]:
+    ) -> list[Article]:
         """Fetch multiple URLs concurrently.
 
         Args:
@@ -90,7 +88,7 @@ class URLFetcher(BaseIngestor):
         """
         semaphore = asyncio.Semaphore(max_concurrent)
 
-        async def fetch_one(url: str) -> Optional[Article]:
+        async def fetch_one(url: str) -> Article | None:
             async with semaphore:
                 try:
                     return await self.ingest(url)

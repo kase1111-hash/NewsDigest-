@@ -2,7 +2,6 @@
 
 import hashlib
 from datetime import datetime
-from typing import Optional
 from urllib.parse import urlparse
 
 from newsdigest.core.article import Article, SourceType
@@ -20,7 +19,7 @@ class ArticleExtractor:
     - Extract main body text
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize article extractor.
 
         Args:
@@ -40,7 +39,7 @@ class ArticleExtractor:
         except ImportError:
             return False
 
-    def extract(self, html: str, url: Optional[str] = None) -> Article:
+    def extract(self, html: str, url: str | None = None) -> Article:
         """Extract article from HTML.
 
         Args:
@@ -92,7 +91,7 @@ class ArticleExtractor:
             language=metadata.get("language", "en"),
         )
 
-    def _extract_with_readability(self, html: str) -> tuple[str, Optional[str]]:
+    def _extract_with_readability(self, html: str) -> tuple[str, str | None]:
         """Extract using readability-lxml.
 
         Args:
@@ -117,7 +116,7 @@ class ArticleExtractor:
             content = self.html_cleaner.clean(html)
             return content, None
 
-    def _generate_id(self, url: Optional[str], content: str) -> str:
+    def _generate_id(self, url: str | None, content: str) -> str:
         """Generate unique article ID.
 
         Args:
@@ -135,7 +134,7 @@ class ArticleExtractor:
 
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
-    def _parse_date(self, date_str: Optional[str]) -> Optional[datetime]:
+    def _parse_date(self, date_str: str | None) -> datetime | None:
         """Parse date string to datetime.
 
         Args:
@@ -174,8 +173,8 @@ class ArticleExtractor:
     def extract_from_text(
         self,
         text: str,
-        title: Optional[str] = None,
-        source_name: Optional[str] = None,
+        title: str | None = None,
+        source_name: str | None = None,
     ) -> Article:
         """Create article from plain text.
 

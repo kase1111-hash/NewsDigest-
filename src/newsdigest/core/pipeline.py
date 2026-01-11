@@ -1,6 +1,6 @@
 """NLP pipeline orchestration for NewsDigest."""
 
-from typing import Any, List, Optional
+from typing import Any
 
 from newsdigest.analyzers import (
     BaseAnalyzer,
@@ -26,7 +26,7 @@ class AnalysisPipeline:
     4. Returns analyzed sentences with scores and flags
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize the analysis pipeline.
 
         Args:
@@ -34,8 +34,8 @@ class AnalysisPipeline:
         """
         self.config = config or {}
         self._nlp: Any = None  # Lazy-loaded spaCy model
-        self._analyzers: List[BaseAnalyzer] = []
-        self._claim_extractor: Optional[ClaimExtractor] = None
+        self._analyzers: list[BaseAnalyzer] = []
+        self._claim_extractor: ClaimExtractor | None = None
 
         # Initialize analyzers
         self._init_analyzers()
@@ -117,7 +117,7 @@ class AnalysisPipeline:
         # Claim extractor runs separately after analysis
         self._claim_extractor = ClaimExtractor(claims_config)
 
-    def process(self, text: str) -> List[Sentence]:
+    def process(self, text: str) -> list[Sentence]:
         """Process text through NLP pipeline.
 
         Args:
@@ -167,7 +167,7 @@ class AnalysisPipeline:
 
         return sentences
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Run sentences through analyzer chain.
 
         Args:
@@ -190,7 +190,7 @@ class AnalysisPipeline:
 
         return sentences
 
-    def process_and_analyze(self, text: str) -> List[Sentence]:
+    def process_and_analyze(self, text: str) -> list[Sentence]:
         """Process text and run analysis in one step.
 
         Args:
@@ -202,7 +202,7 @@ class AnalysisPipeline:
         sentences = self.process(text)
         return self.analyze(sentences)
 
-    def get_claims(self) -> List[Claim]:
+    def get_claims(self) -> list[Claim]:
         """Get extracted claims from last analysis.
 
         Returns:
@@ -212,7 +212,7 @@ class AnalysisPipeline:
             return self._claim_extractor.get_claims()
         return []
 
-    def get_statistics(self, sentences: List[Sentence]) -> dict:
+    def get_statistics(self, sentences: list[Sentence]) -> dict:
         """Get analysis statistics from sentences.
 
         Args:

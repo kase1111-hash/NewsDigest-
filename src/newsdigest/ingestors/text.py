@@ -1,7 +1,6 @@
 """Text ingestor for NewsDigest."""
 
 import hashlib
-from typing import List, Optional
 
 from newsdigest.core.article import Article, SourceType
 from newsdigest.ingestors.base import BaseIngestor
@@ -16,7 +15,7 @@ class TextIngestor(BaseIngestor):
     - File content
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize text ingestor.
 
         Args:
@@ -35,7 +34,7 @@ class TextIngestor(BaseIngestor):
         """
         return self.from_text(source)
 
-    async def ingest_batch(self, sources: List[str]) -> List[Article]:
+    async def ingest_batch(self, sources: list[str]) -> list[Article]:
         """Create articles from multiple text sources.
 
         Args:
@@ -49,9 +48,9 @@ class TextIngestor(BaseIngestor):
     def from_text(
         self,
         text: str,
-        title: Optional[str] = None,
-        source_name: Optional[str] = None,
-        url: Optional[str] = None,
+        title: str | None = None,
+        source_name: str | None = None,
+        url: str | None = None,
     ) -> Article:
         """Create article from plain text.
 

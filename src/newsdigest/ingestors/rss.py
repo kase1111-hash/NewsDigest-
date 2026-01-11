@@ -3,7 +3,6 @@
 import asyncio
 import hashlib
 from datetime import datetime
-from typing import List, Optional
 from urllib.parse import urlparse
 
 import feedparser
@@ -20,7 +19,7 @@ class RSSParser(BaseIngestor):
     Can optionally fetch full article content from links.
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize RSS parser.
 
         Args:
@@ -48,7 +47,7 @@ class RSSParser(BaseIngestor):
             raise ValueError(f"No articles found in feed: {source}")
         return articles[0]
 
-    async def ingest_batch(self, sources: List[str]) -> List[Article]:
+    async def ingest_batch(self, sources: list[str]) -> list[Article]:
         """Parse multiple RSS feeds.
 
         Args:
@@ -71,8 +70,8 @@ class RSSParser(BaseIngestor):
     async def parse(
         self,
         feed_url: str,
-        limit: Optional[int] = None,
-    ) -> List[Article]:
+        limit: int | None = None,
+    ) -> list[Article]:
         """Parse RSS feed and return list of articles.
 
         Args:
@@ -113,7 +112,7 @@ class RSSParser(BaseIngestor):
         entry: dict,
         source_name: str,
         feed_url: str,
-    ) -> Optional[Article]:
+    ) -> Article | None:
         """Parse a single feed entry into an Article.
 
         Args:
@@ -184,7 +183,7 @@ class RSSParser(BaseIngestor):
         """
         return hashlib.sha256(identifier.encode()).hexdigest()[:16]
 
-    def _parse_date(self, entry: dict) -> Optional[datetime]:
+    def _parse_date(self, entry: dict) -> datetime | None:
         """Parse published date from entry.
 
         Args:
@@ -195,7 +194,7 @@ class RSSParser(BaseIngestor):
         """
         # feedparser provides parsed date as time struct
         for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
-            if date_field in entry and entry[date_field]:
+            if entry.get(date_field):
                 try:
                     import time
 
@@ -209,7 +208,7 @@ class RSSParser(BaseIngestor):
         self,
         feed_url: str,
         since: datetime,
-    ) -> List[Article]:
+    ) -> list[Article]:
         """Get only items published since given time.
 
         Args:

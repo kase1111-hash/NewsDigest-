@@ -3,7 +3,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
 
 
 class SentenceCategory(Enum):
@@ -48,9 +47,9 @@ class Sentence:
     index: int
 
     # NLP data
-    tokens: List[str] = field(default_factory=list)
-    pos_tags: List[str] = field(default_factory=list)
-    entities: List[dict] = field(default_factory=list)
+    tokens: list[str] = field(default_factory=list)
+    pos_tags: list[str] = field(default_factory=list)
+    entities: list[dict] = field(default_factory=list)
 
     # Analysis scores (0.0 - 1.0)
     density_score: float = 0.0
@@ -61,12 +60,12 @@ class Sentence:
     # Classification
     category: SentenceCategory = SentenceCategory.FACTUAL
     keep: bool = True
-    removal_reason: Optional[str] = None
+    removal_reason: str | None = None
 
     # Source attribution
     has_named_source: bool = False
     has_unnamed_source: bool = False
-    source_name: Optional[str] = None
+    source_name: str | None = None
 
 
 @dataclass
@@ -77,7 +76,7 @@ class Claim:
     claim_type: ClaimType
 
     # Attribution
-    source: Optional[str] = None
+    source: str | None = None
     source_type: str = "unknown"
 
     # Confidence (0.0 - 1.0)
@@ -97,7 +96,7 @@ class RemovedContent:
     original_length: int = 0
 
     # For hedge padding - the compressed version
-    compressed_version: Optional[str] = None
+    compressed_version: str | None = None
 
 
 @dataclass
@@ -126,30 +125,30 @@ class ExtractionResult:
 
     # Identifiers
     id: str
-    url: Optional[str] = None
+    url: str | None = None
 
     # Article metadata
-    title: Optional[str] = None
-    source: Optional[str] = None
-    published_at: Optional[datetime] = None
+    title: str | None = None
+    source: str | None = None
+    published_at: datetime | None = None
     processed_at: datetime = field(default_factory=datetime.utcnow)
 
     # Extracted content
     text: str = ""
-    claims: List[Claim] = field(default_factory=list)
+    claims: list[Claim] = field(default_factory=list)
 
     # Named sources found
-    sources_named: List[str] = field(default_factory=list)
+    sources_named: list[str] = field(default_factory=list)
 
     # Warnings (kept but flagged)
-    warnings: List[dict] = field(default_factory=list)
+    warnings: list[dict] = field(default_factory=list)
 
     # Removed content
-    removed: List[RemovedContent] = field(default_factory=list)
+    removed: list[RemovedContent] = field(default_factory=list)
 
     # Statistics
     statistics: ExtractionStatistics = field(default_factory=ExtractionStatistics)
 
     # Original for comparison mode
-    original_text: Optional[str] = None
-    sentences: List[Sentence] = field(default_factory=list)
+    original_text: str | None = None
+    sentences: list[Sentence] = field(default_factory=list)

@@ -1,13 +1,11 @@
 """Tests for configuration settings."""
 
-import os
-import pytest
 from pathlib import Path
 
 from newsdigest.config.settings import (
     Config,
-    ExtractionConfig,
     DigestConfig,
+    ExtractionConfig,
     OutputConfig,
     QuotesConfig,
 )

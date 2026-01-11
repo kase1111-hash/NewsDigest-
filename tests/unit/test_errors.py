@@ -1,23 +1,23 @@
 """Tests for error reporting utilities."""
 
-import pytest
-from unittest.mock import patch, MagicMock
 
+import pytest
+
+from newsdigest.exceptions import ExtractionError
 from newsdigest.utils.errors import (
-    ErrorSeverity,
     ErrorContext,
     ErrorReporter,
-    get_error_context,
-    get_error_reporter,
-    capture_exception,
-    capture_message,
+    ErrorSeverity,
     add_breadcrumb,
     capture_errors,
+    capture_exception,
+    capture_message,
     error_boundary,
     format_exception,
+    get_error_context,
+    get_error_reporter,
     get_exception_chain,
 )
-from newsdigest.exceptions import NewsDigestError, ExtractionError
 
 
 class TestErrorSeverity:
@@ -244,9 +244,8 @@ class TestErrorBoundary:
 
     def test_boundary_reraises_by_default(self):
         """Test that error boundary re-raises by default."""
-        with pytest.raises(ValueError):
-            with error_boundary("test operation"):
-                raise ValueError("Test")
+        with pytest.raises(ValueError), error_boundary("test operation"):
+            raise ValueError("Test")
 
     def test_boundary_no_reraise(self):
         """Test error boundary with reraise=False."""

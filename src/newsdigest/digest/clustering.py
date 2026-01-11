@@ -1,8 +1,6 @@
 """Topic clustering for NewsDigest."""
 
 import re
-from collections import Counter
-from typing import Dict, List, Optional, Set, Tuple
 
 from newsdigest.core.result import ExtractionResult
 
@@ -15,7 +13,7 @@ class TopicClusterer:
     """
 
     # Topic definitions with keywords and emoji
-    TOPICS: List[Tuple[str, str, Set[str]]] = [
+    TOPICS: list[tuple[str, str, set[str]]] = [
         (
             "World",
             "🌍",
@@ -239,7 +237,7 @@ class TopicClusterer:
         ),
     ]
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize topic clusterer.
 
         Args:
@@ -249,8 +247,8 @@ class TopicClusterer:
         self.min_cluster_size = self.config.get("min_cluster_size", 1)
 
     def cluster(
-        self, articles: List[ExtractionResult]
-    ) -> Dict[str, List[ExtractionResult]]:
+        self, articles: list[ExtractionResult]
+    ) -> dict[str, list[ExtractionResult]]:
         """Cluster articles into topics.
 
         Args:
@@ -259,7 +257,7 @@ class TopicClusterer:
         Returns:
             Dictionary mapping topic names to articles.
         """
-        clusters: Dict[str, List[ExtractionResult]] = {}
+        clusters: dict[str, list[ExtractionResult]] = {}
 
         for article in articles:
             topic = self._classify_topic(article)
@@ -288,7 +286,7 @@ class TopicClusterer:
         words = set(re.findall(r'\b\w+\b', content))
 
         # Score each topic
-        scores: Dict[str, int] = {}
+        scores: dict[str, int] = {}
         for topic_name, _, keywords in self.TOPICS:
             score = len(words & keywords)
             if score > 0:
@@ -299,7 +297,7 @@ class TopicClusterer:
             return max(scores.keys(), key=lambda k: scores[k])
         return "Other"
 
-    def get_topic_info(self, topic_name: str) -> Tuple[str, str]:
+    def get_topic_info(self, topic_name: str) -> tuple[str, str]:
         """Get topic name and emoji.
 
         Args:
@@ -313,7 +311,7 @@ class TopicClusterer:
                 return name, emoji
         return topic_name, "📌"
 
-    def get_all_topics(self) -> List[Tuple[str, str]]:
+    def get_all_topics(self) -> list[tuple[str, str]]:
         """Get all topic names and emojis.
 
         Returns:

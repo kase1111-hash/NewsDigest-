@@ -1,14 +1,13 @@
 """Filler content detector for NewsDigest."""
 
 import re
-from typing import List, Set
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence, SentenceCategory
 
 
 # Engagement hooks and filler patterns
-ENGAGEMENT_HOOKS: List[str] = [
+ENGAGEMENT_HOOKS: list[str] = [
     r"here'?s what you need to know",
     r"what happened next will surprise you",
     r"but that'?s not the whole story",
@@ -36,7 +35,7 @@ ENGAGEMENT_HOOKS: List[str] = [
 ]
 
 # Low-information transitional phrases
-TRANSITIONAL_FILLER: List[str] = [
+TRANSITIONAL_FILLER: list[str] = [
     r"^meanwhile,?$",
     r"^however,?$",
     r"^furthermore,?$",
@@ -79,7 +78,7 @@ class FillerDetector(BaseAnalyzer):
         self.min_word_count = self.config.get("min_word_count", 4)
         self.min_entity_density = self.config.get("min_entity_density", 0.1)
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for filler content.
 
         Args:
@@ -146,7 +145,7 @@ class FillerDetector(BaseAnalyzer):
 
         return False, None
 
-    def get_engagement_hook_count(self, sentences: List[Sentence]) -> int:
+    def get_engagement_hook_count(self, sentences: list[Sentence]) -> int:
         """Count engagement hooks in sentences.
 
         Args:

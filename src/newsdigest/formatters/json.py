@@ -2,7 +2,7 @@
 
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from newsdigest.core.result import ExtractionResult
 from newsdigest.formatters.base import BaseFormatter
@@ -14,7 +14,7 @@ class JSONFormatter(BaseFormatter):
     Provides structured JSON output matching the API response format.
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize JSON formatter.
 
         Args:
@@ -37,7 +37,7 @@ class JSONFormatter(BaseFormatter):
         data = self._result_to_dict(result)
         return json.dumps(data, indent=self.indent, default=self._json_serializer)
 
-    def _result_to_dict(self, result: ExtractionResult) -> Dict[str, Any]:
+    def _result_to_dict(self, result: ExtractionResult) -> dict[str, Any]:
         """Convert ExtractionResult to dictionary.
 
         Args:
@@ -46,7 +46,7 @@ class JSONFormatter(BaseFormatter):
         Returns:
             Dictionary representation.
         """
-        data: Dict[str, Any] = {
+        data: dict[str, Any] = {
             "id": result.id,
             "url": result.url,
             "title": result.title,

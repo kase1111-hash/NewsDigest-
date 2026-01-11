@@ -7,6 +7,7 @@ Tests are organized by User Story ID for traceability.
 """
 
 import json
+
 import pytest
 
 from newsdigest.config.settings import Config

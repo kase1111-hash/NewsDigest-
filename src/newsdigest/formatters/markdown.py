@@ -1,7 +1,6 @@
 """Markdown formatter for NewsDigest."""
 
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from newsdigest.core.result import ExtractionResult
 from newsdigest.formatters.base import BaseFormatter
@@ -17,7 +16,7 @@ class MarkdownFormatter(BaseFormatter):
     - Statistics
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize Markdown formatter.
 
         Args:

@@ -10,14 +10,15 @@ from newsdigest.analyzers.repetition import RepetitionCollapser
 from newsdigest.analyzers.sources import SourceValidator
 from newsdigest.analyzers.speculation import SpeculationStripper
 
+
 __all__ = [
     "BaseAnalyzer",
-    "FillerDetector",
-    "SpeculationStripper",
-    "EmotionalDetector",
-    "SourceValidator",
-    "RepetitionCollapser",
-    "NoveltyScorer",
     "ClaimExtractor",
+    "EmotionalDetector",
+    "FillerDetector",
+    "NoveltyScorer",
     "QuoteIsolator",
+    "RepetitionCollapser",
+    "SourceValidator",
+    "SpeculationStripper",
 ]

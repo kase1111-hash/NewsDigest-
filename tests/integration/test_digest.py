@@ -5,7 +5,6 @@ These tests verify the digest generation pipeline.
 
 import pytest
 
-from newsdigest.config.settings import Config
 from newsdigest.core.extractor import Extractor
 from newsdigest.core.result import ExtractionResult
 

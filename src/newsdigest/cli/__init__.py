@@ -2,4 +2,5 @@
 
 from newsdigest.cli.main import cli
 
+
 __all__ = ["cli"]

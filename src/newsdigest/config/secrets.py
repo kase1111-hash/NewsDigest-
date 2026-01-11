@@ -9,10 +9,12 @@ This module provides secure handling of sensitive configuration:
 
 import os
 import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
+from typing import TypeVar
 
 from newsdigest.utils.logging import get_logger
+
 
 logger = get_logger(__name__)
 
@@ -35,7 +37,7 @@ class SecretValue:
         actual = secret.get()  # Returns "my-api-key"
     """
 
-    def __init__(self, value: Optional[str]) -> None:
+    def __init__(self, value: str | None) -> None:
         """Initialize secret value.
 
         Args:
@@ -43,7 +45,7 @@ class SecretValue:
         """
         self._value = value
 
-    def get(self) -> Optional[str]:
+    def get(self) -> str | None:
         """Get the actual secret value.
 
         Returns:
@@ -86,7 +88,7 @@ class EnvLoader:
 
     def __init__(
         self,
-        env_file: Optional[Union[str, Path]] = None,
+        env_file: str | Path | None = None,
         prefix: str = "NEWSDIGEST_",
     ) -> None:
         """Initialize environment loader.
@@ -97,7 +99,7 @@ class EnvLoader:
         """
         self._prefix = prefix
         self._loaded_from_file = False
-        self._env_file: Optional[Path] = None
+        self._env_file: Path | None = None
 
         # Try to load .env file
         if env_file:
@@ -109,7 +111,7 @@ class EnvLoader:
         if self._env_file and self._env_file.exists():
             self._load_env_file(self._env_file)
 
-    def _find_env_file(self) -> Optional[Path]:
+    def _find_env_file(self) -> Path | None:
         """Find .env file in current directory or parents.
 
         Returns:
@@ -157,7 +159,7 @@ class EnvLoader:
         Args:
             path: Path to .env file.
         """
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             for line_num, line in enumerate(f, 1):
                 line = line.strip()
 
@@ -190,10 +192,10 @@ class EnvLoader:
     def get(
         self,
         key: str,
-        default: Optional[T] = None,
+        default: T | None = None,
         required: bool = False,
-        cast: Optional[Callable[[str], T]] = None,
-    ) -> Optional[Union[str, T]]:
+        cast: Callable[[str], T] | None = None,
+    ) -> str | T | None:
         """Get an environment variable.
 
         Args:
@@ -303,9 +305,9 @@ class EnvLoader:
     def get_list(
         self,
         key: str,
-        default: Optional[List[str]] = None,
+        default: list[str] | None = None,
         separator: str = ",",
-    ) -> List[str]:
+    ) -> list[str]:
         """Get a list environment variable.
 
         Args:
@@ -327,7 +329,7 @@ class EnvLoader:
         return self._loaded_from_file
 
     @property
-    def env_file_path(self) -> Optional[Path]:
+    def env_file_path(self) -> Path | None:
         """Get the path to the loaded .env file."""
         return self._env_file
 
@@ -350,7 +352,7 @@ class SecretsManager:
         Args:
             cache_ttl: Cache time-to-live in seconds.
         """
-        self._cache: Dict[str, tuple] = {}  # key -> (value, timestamp)
+        self._cache: dict[str, tuple] = {}  # key -> (value, timestamp)
         self._cache_ttl = cache_ttl
 
     def get_secret(self, key: str, required: bool = False) -> SecretValue:
@@ -382,7 +384,7 @@ class SecretsManager:
                 raise ValueError(f"Required secret {key} not found: {e}")
             return SecretValue(None)
 
-    def _fetch_secret(self, key: str) -> Optional[str]:
+    def _fetch_secret(self, key: str) -> str | None:
         """Fetch secret from backend.
 
         Override this method to integrate with external secrets managers.
@@ -409,7 +411,7 @@ class AWSSecretsManager(SecretsManager):
 
     def __init__(
         self,
-        region_name: Optional[str] = None,
+        region_name: str | None = None,
         cache_ttl: int = 300,
     ) -> None:
         """Initialize AWS Secrets Manager client.
@@ -435,7 +437,7 @@ class AWSSecretsManager(SecretsManager):
                 raise ImportError("boto3 is required for AWS Secrets Manager")
         return self._client
 
-    def _fetch_secret(self, key: str) -> Optional[str]:
+    def _fetch_secret(self, key: str) -> str | None:
         """Fetch secret from AWS Secrets Manager.
 
         Args:
@@ -470,8 +472,8 @@ class SecretMasker:
 
     def __init__(self) -> None:
         """Initialize secret masker."""
-        self._secrets: List[str] = []
-        self._patterns: List[re.Pattern] = []
+        self._secrets: list[str] = []
+        self._patterns: list[re.Pattern] = []
 
         # Common secret patterns
         self._add_pattern(r"(?i)(api[_-]?key|apikey)['\"]?\s*[:=]\s*['\"]?([a-zA-Z0-9_\-]{16,})")
@@ -534,7 +536,7 @@ class SecretMasker:
 # =============================================================================
 
 # Global environment loader
-_env_loader: Optional[EnvLoader] = None
+_env_loader: EnvLoader | None = None
 
 # Global secret masker
 _masker = SecretMasker()
@@ -553,7 +555,7 @@ def get_env_loader() -> EnvLoader:
 
 
 def init_env(
-    env_file: Optional[Union[str, Path]] = None,
+    env_file: str | Path | None = None,
     prefix: str = "NEWSDIGEST_",
 ) -> EnvLoader:
     """Initialize the global environment loader.
@@ -586,9 +588,9 @@ def get_secret_masker() -> SecretMasker:
 
 def get_env(
     key: str,
-    default: Optional[str] = None,
+    default: str | None = None,
     required: bool = False,
-) -> Optional[str]:
+) -> str | None:
     """Get an environment variable.
 
     Args:

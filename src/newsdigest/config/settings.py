@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -59,7 +59,7 @@ class Config(BaseModel):
     output: OutputConfig = Field(default_factory=OutputConfig)
 
     # Sources
-    sources: List[Dict[str, Any]] = Field(default_factory=list)
+    sources: list[dict[str, Any]] = Field(default_factory=list)
 
     # NLP settings
     spacy_model: str = "en_core_web_sm"
@@ -75,7 +75,7 @@ class Config(BaseModel):
     cache_max_size: int = 1000
 
     @classmethod
-    def from_file(cls, path: Union[str, Path]) -> "Config":
+    def from_file(cls, path: str | Path) -> "Config":
         """Load configuration from YAML file.
 
         Args:
@@ -182,7 +182,7 @@ class Config(BaseModel):
             cache_max_size=get_env_int("CACHE_MAX_SIZE", 1000),
         )
 
-    def save(self, path: Optional[Union[str, Path]] = None) -> None:
+    def save(self, path: str | Path | None = None) -> None:
         """Save configuration to YAML file.
 
         Args:
@@ -196,7 +196,7 @@ class Config(BaseModel):
         with open(path, "w") as f:
             yaml.dump(self.model_dump(), f, default_flow_style=False)
 
-    def to_env_vars(self, prefix: str = "NEWSDIGEST_") -> Dict[str, str]:
+    def to_env_vars(self, prefix: str = "NEWSDIGEST_") -> dict[str, str]:
         """Export configuration as environment variables.
 
         Args:

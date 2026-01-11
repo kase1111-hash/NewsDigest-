@@ -4,10 +4,9 @@ These tests verify extraction speed, throughput, and resource usage.
 Run with: pytest tests/performance -v --tb=short
 """
 
-import asyncio
 import time
+
 import pytest
-from typing import List
 
 from newsdigest.core.extractor import Extractor
 from newsdigest.core.result import ExtractionResult
@@ -85,7 +84,7 @@ def large_article() -> str:
 
 
 @pytest.fixture
-def batch_articles() -> List[str]:
+def batch_articles() -> list[str]:
     """Multiple articles for batch testing."""
     templates = [
         "Apple reported $90 billion in revenue. CEO Tim Cook was pleased with results.",
@@ -178,7 +177,7 @@ class TestBatchPerformance:
 
     @pytest.mark.asyncio
     async def test_batch_throughput(
-        self, extractor: Extractor, batch_articles: List[str]
+        self, extractor: Extractor, batch_articles: list[str]
     ) -> None:
         """Batch processing meets minimum throughput."""
         start = time.perf_counter()
@@ -193,7 +192,7 @@ class TestBatchPerformance:
 
     @pytest.mark.asyncio
     async def test_batch_time_per_article(
-        self, extractor: Extractor, batch_articles: List[str]
+        self, extractor: Extractor, batch_articles: list[str]
     ) -> None:
         """Average time per article in batch is acceptable."""
         start = time.perf_counter()
@@ -207,7 +206,7 @@ class TestBatchPerformance:
 
     @pytest.mark.asyncio
     async def test_parallel_faster_than_sequential(
-        self, extractor: Extractor, batch_articles: List[str]
+        self, extractor: Extractor, batch_articles: list[str]
     ) -> None:
         """Parallel processing is faster than sequential for multiple items."""
         # Sequential
@@ -378,7 +377,6 @@ class TestMemoryUsage:
 
     def test_no_memory_leak_repeated_extraction(self, extractor: Extractor) -> None:
         """Repeated extractions don't leak memory significantly."""
-        import sys
 
         content = "Test article content for memory testing. " * 100
 

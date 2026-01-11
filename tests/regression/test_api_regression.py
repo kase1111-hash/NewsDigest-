@@ -4,13 +4,22 @@ These tests ensure the public API remains stable and backwards compatible.
 """
 
 import json
-import pytest
-from typing import Any, Dict, List
+from typing import Any
 
-from newsdigest.config.settings import Config, ExtractionConfig, DigestConfig, OutputConfig
-from newsdigest.core.extractor import Extractor
-from newsdigest.core.result import ExtractionResult, ExtractionStatistics, Claim, Sentence
+import pytest
+
+from newsdigest.config.settings import (
+    Config,
+    DigestConfig,
+    ExtractionConfig,
+    OutputConfig,
+)
 from newsdigest.core.article import Article, SourceType
+from newsdigest.core.extractor import Extractor
+from newsdigest.core.result import (
+    ExtractionResult,
+    ExtractionStatistics,
+)
 
 
 class TestExtractorAPIRegression:
@@ -296,7 +305,7 @@ class TestJSONOutputRegression:
     """Tests for JSON output schema stability."""
 
     @pytest.fixture
-    def json_output(self) -> Dict[str, Any]:
+    def json_output(self) -> dict[str, Any]:
         """Get JSON output."""
         extractor = Extractor()
         result = extractor.extract_sync(
@@ -304,13 +313,13 @@ class TestJSONOutputRegression:
         )
         return json.loads(extractor.format(result, format="json"))
 
-    def test_json_top_level_structure(self, json_output: Dict[str, Any]) -> None:
+    def test_json_top_level_structure(self, json_output: dict[str, Any]) -> None:
         """JSON has expected top-level structure."""
         # These fields should always be present
         assert "text" in json_output
         assert "statistics" in json_output
 
-    def test_json_statistics_structure(self, json_output: Dict[str, Any]) -> None:
+    def test_json_statistics_structure(self, json_output: dict[str, Any]) -> None:
         """JSON statistics have expected structure."""
         stats = json_output.get("statistics", {})
 
@@ -323,7 +332,7 @@ class TestJSONOutputRegression:
         for stat in expected_stats:
             assert stat in stats, f"Missing stat in JSON: {stat}"
 
-    def test_json_types_correct(self, json_output: Dict[str, Any]) -> None:
+    def test_json_types_correct(self, json_output: dict[str, Any]) -> None:
         """JSON field types are correct."""
         assert isinstance(json_output["text"], str)
 
@@ -345,14 +354,14 @@ class TestExceptionAPIRegression:
     def test_exception_hierarchy(self) -> None:
         """Exception hierarchy is correct."""
         from newsdigest.exceptions import (
-            NewsDigestError,
             ConfigurationError,
             ExtractionError,
-            IngestError,
             FetchError,
+            FormatterError,
+            IngestError,
+            NewsDigestError,
             ParseError,
             PipelineError,
-            FormatterError,
         )
 
         # All should inherit from NewsDigestError
@@ -390,11 +399,10 @@ class TestUtilsAPIRegression:
     def test_logging_functions_exist(self) -> None:
         """Logging utility functions exist."""
         from newsdigest.utils import (
-            setup_logging,
             get_logger,
             init_logging,
             log_performance,
-            LoggedOperation,
+            setup_logging,
         )
 
         assert callable(setup_logging)
@@ -405,12 +413,12 @@ class TestUtilsAPIRegression:
     def test_validation_functions_exist(self) -> None:
         """Validation utility functions exist."""
         from newsdigest.utils import (
-            validate_url,
-            validate_url_strict,
             is_valid_url,
             sanitize_html,
             sanitize_text,
             validate_text_content,
+            validate_url,
+            validate_url_strict,
         )
 
         assert callable(validate_url)
@@ -423,12 +431,11 @@ class TestUtilsAPIRegression:
     def test_error_reporting_functions_exist(self) -> None:
         """Error reporting utility functions exist."""
         from newsdigest.utils import (
-            configure_error_reporting,
-            capture_exception,
-            capture_message,
             add_breadcrumb,
             capture_errors,
-            error_boundary,
+            capture_exception,
+            capture_message,
+            configure_error_reporting,
         )
 
         assert callable(configure_error_reporting)

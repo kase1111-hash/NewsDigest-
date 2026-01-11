@@ -12,10 +12,12 @@ import logging
 import os
 import sys
 import time
+from collections.abc import Callable
 from contextlib import contextmanager
 from datetime import datetime
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, TypeVar
+
 
 # Type variable for decorator
 F = TypeVar("F", bound=Callable[..., Any])
@@ -117,7 +119,7 @@ class StructuredFormatter(logging.Formatter):
             }
 
         # Simple JSON-like output (for actual JSON, use proper json.dumps)
-        parts = [f"{k}={repr(v)}" for k, v in log_data.items()]
+        parts = [f"{k}={v!r}" for k, v in log_data.items()]
         return " | ".join(parts)
 
 
@@ -127,9 +129,9 @@ class StructuredFormatter(logging.Formatter):
 
 
 def setup_logging(
-    level: Optional[str] = None,
+    level: str | None = None,
     format_type: str = "default",
-    log_file: Optional[str] = None,
+    log_file: str | None = None,
     colored: bool = True,
 ) -> logging.Logger:
     """Configure logging for NewsDigest.
@@ -191,7 +193,7 @@ def setup_logging(
     return logger
 
 
-def get_logger(name: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str | None = None) -> logging.Logger:
     """Get a logger for the specified module.
 
     Args:
@@ -241,7 +243,7 @@ def log_context(**kwargs: Any):
         logging.setLogRecordFactory(old_factory)
 
 
-def log_performance(logger: Optional[logging.Logger] = None) -> Callable[[F], F]:
+def log_performance(logger: logging.Logger | None = None) -> Callable[[F], F]:
     """Decorator to log function execution time.
 
     Args:
@@ -410,7 +412,7 @@ def log_extraction_complete(
 def log_error(
     logger: logging.Logger,
     message: str,
-    exc: Optional[Exception] = None,
+    exc: Exception | None = None,
     **context: Any,
 ) -> None:
     """Log an error with context.
@@ -429,7 +431,7 @@ def log_error(
 
 
 # Initialize default logger on import
-_default_logger: Optional[logging.Logger] = None
+_default_logger: logging.Logger | None = None
 
 
 def init_logging() -> logging.Logger:

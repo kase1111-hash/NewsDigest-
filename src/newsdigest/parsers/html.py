@@ -1,13 +1,12 @@
 """HTML cleaner for NewsDigest."""
 
 import re
-from typing import List, Optional, Set
 
 from bs4 import BeautifulSoup, Comment, NavigableString, Tag
 
 
 # Elements to completely remove
-REMOVE_ELEMENTS: Set[str] = {
+REMOVE_ELEMENTS: set[str] = {
     "script",
     "style",
     "noscript",
@@ -27,7 +26,7 @@ REMOVE_ELEMENTS: Set[str] = {
 }
 
 # Elements typically containing non-content
-NON_CONTENT_ELEMENTS: Set[str] = {
+NON_CONTENT_ELEMENTS: set[str] = {
     "nav",
     "header",
     "footer",
@@ -37,7 +36,7 @@ NON_CONTENT_ELEMENTS: Set[str] = {
 }
 
 # Classes/IDs that typically indicate non-content
-NON_CONTENT_PATTERNS: List[str] = [
+NON_CONTENT_PATTERNS: list[str] = [
     r"nav",
     r"menu",
     r"sidebar",
@@ -83,7 +82,7 @@ class HTMLCleaner:
     - Non-content elements based on class/id patterns
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize HTML cleaner.
 
         Args:
@@ -232,7 +231,7 @@ class HTMLCleaner:
 
         return text.strip()
 
-    def get_links(self, html: str) -> List[dict]:
+    def get_links(self, html: str) -> list[dict]:
         """Extract links from HTML.
 
         Args:
@@ -252,7 +251,7 @@ class HTMLCleaner:
 
         return links
 
-    def get_images(self, html: str) -> List[dict]:
+    def get_images(self, html: str) -> list[dict]:
         """Extract images from HTML.
 
         Args:
