@@ -2,7 +2,7 @@
 # Common development and build commands
 
 .PHONY: help install install-dev install-all clean test lint format type-check \
-        build docker docker-build docker-up docker-down docker-logs \
+        build package docker docker-build docker-up docker-down docker-logs \
         docs docs-serve setup-models venv
 
 # Default target
@@ -122,6 +122,15 @@ check-ci: lint type-check security-scan ## Run CI checks (no tests)
 build: ## Build distribution packages
 	@echo "$(BLUE)Building distribution packages...$(NC)"
 	$(PYTHON) -m build
+
+package: build ## Build and validate packages
+	@echo "$(BLUE)Validating packages...$(NC)"
+	twine check dist/*
+	@echo "$(GREEN)Packages ready in dist/$(NC)"
+
+package-all: ## Build Python packages and Docker images
+	@echo "$(BLUE)Building all distributable packages...$(NC)"
+	./scripts/package.sh --all
 
 clean: ## Clean build artifacts
 	@echo "$(BLUE)Cleaning build artifacts...$(NC)"
