@@ -14,6 +14,7 @@ from newsdigest.storage.cache import (
     cache_key_for_text,
     cache_key_for_url,
 )
+from newsdigest.storage.database import Database
 
 __all__ = [
     # Base
@@ -30,4 +31,6 @@ __all__ = [
     "AnalyticsStore",
     "ExtractionRecord",
     "SourceStore",
+    # Database
+    "Database",
 ]

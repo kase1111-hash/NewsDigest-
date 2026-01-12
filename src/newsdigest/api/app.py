@@ -17,6 +17,7 @@ from newsdigest.exceptions import (
     NewsDigestError,
     ValidationError,
 )
+from newsdigest.storage.cache import MemoryCache
 from newsdigest.version import __version__
 
 
@@ -25,20 +26,33 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler."""
     # Startup
     app.state.config = Config()
+    app.state.cache = MemoryCache(max_size=1000, default_ttl=300)
     yield
     # Shutdown
-    pass
+    await app.state.cache.clear()
 
 
-def create_app(config: Config | None = None) -> FastAPI:
+def create_app(
+    config: Config | None = None,
+    enable_auth: bool = False,
+    enable_rate_limit: bool = True,
+) -> FastAPI:
     """Create and configure the FastAPI application.
 
     Args:
         config: Optional configuration object.
+        enable_auth: Enable API key authentication.
+        enable_rate_limit: Enable rate limiting.
 
     Returns:
         Configured FastAPI application.
     """
+    from newsdigest.api.middleware import (
+        AuthMiddleware,
+        RateLimitMiddleware,
+        RequestTrackingMiddleware,
+    )
+
     app = FastAPI(
         title="NewsDigest API",
         description=(
@@ -57,7 +71,17 @@ def create_app(config: Config | None = None) -> FastAPI:
     if config:
         app.state.config = config
 
-    # Add CORS middleware
+    # Add middleware (order matters - first added = last executed)
+    # Request tracking (outermost)
+    app.add_middleware(RequestTrackingMiddleware)
+
+    # Rate limiting
+    app.add_middleware(RateLimitMiddleware, enabled=enable_rate_limit)
+
+    # Authentication
+    app.add_middleware(AuthMiddleware, enabled=enable_auth)
+
+    # CORS (innermost)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
