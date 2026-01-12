@@ -1,0 +1,206 @@
+"""Extraction endpoints for NewsDigest API."""
+
+import asyncio
+import time
+
+from fastapi import APIRouter, Request
+
+from newsdigest.api.app import get_config
+from newsdigest.api.models import (
+    BatchExtractionRequest,
+    BatchExtractionResponse,
+    BatchResultItem,
+    BatchSummary,
+    Claim,
+    ExtractionRequest,
+    ExtractionResponse,
+    ExtractionResult,
+    RemovedContent,
+    Sentence,
+    Statistics,
+)
+from newsdigest.core.extractor import Extractor
+
+router = APIRouter()
+
+
+def _result_to_api(
+    result: "ExtractionResult",  # type: ignore[name-defined]
+    processing_time_ms: float,
+) -> ExtractionResult:
+    """Convert internal ExtractionResult to API model.
+
+    Args:
+        result: Internal extraction result.
+        processing_time_ms: Processing time in milliseconds.
+
+    Returns:
+        API extraction result model.
+    """
+    # Convert sentences
+    sentences = []
+    for s in result.sentences:
+        sentences.append(
+            Sentence(
+                text=s.text,
+                kept=s.keep,
+                density_score=s.density_score,
+                has_hedge=s.speculation_score > 0.3,
+                has_speculation=s.speculation_score > 0.5,
+                has_emotion=s.emotional_score > 0.5,
+            )
+        )
+
+    # Convert claims
+    claims = []
+    for c in result.claims:
+        claims.append(
+            Claim(
+                text=c.text,
+                type=c.claim_type.value,
+                confidence=c.confidence,
+                source_attribution=c.source,
+            )
+        )
+
+    # Convert removed content
+    removed = []
+    for r in result.removed:
+        removed.append(
+            RemovedContent(
+                text=r.text,
+                reason=r.reason.value.lower(),
+            )
+        )
+
+    # Build removal breakdown
+    breakdown: dict[str, int] = {}
+    for r in result.removed:
+        reason = r.reason.value.lower()
+        breakdown[reason] = breakdown.get(reason, 0) + 1
+
+    # Build statistics
+    stats = Statistics(
+        original_words=result.statistics.original_words,
+        compressed_words=result.statistics.compressed_words,
+        compression_ratio=result.statistics.compression_ratio,
+        sentences_kept=sum(1 for s in result.sentences if s.keep),
+        sentences_removed=sum(1 for s in result.sentences if not s.keep),
+        processing_time_ms=processing_time_ms,
+        removal_breakdown=breakdown,
+    )
+
+    return ExtractionResult(
+        title=result.title,
+        source_url=result.url,
+        publish_date=result.published_at,
+        content=result.text,
+        sentences=sentences,
+        claims=claims,
+        statistics=stats,
+        removed_content=removed,
+    )
+
+
+@router.post("/extract", response_model=ExtractionResponse)
+async def extract_content(
+    body: ExtractionRequest,
+    request: Request,
+) -> ExtractionResponse:
+    """Extract and compress content from a source.
+
+    Args:
+        body: Extraction request with source and options.
+        request: FastAPI request object.
+
+    Returns:
+        Extraction response with results.
+    """
+    config = get_config(request)
+    extractor = Extractor(config)
+
+    start_time = time.perf_counter()
+
+    # Determine if source is URL or text
+    source = body.source.strip()
+    if source.startswith(("http://", "https://")):
+        result = await extractor.extract(source)
+    else:
+        result = extractor.extract_text(source)
+
+    processing_time = (time.perf_counter() - start_time) * 1000
+
+    api_result = _result_to_api(result, processing_time)
+
+    return ExtractionResponse(success=True, result=api_result)
+
+
+@router.post("/extract/batch", response_model=BatchExtractionResponse)
+async def extract_batch(
+    body: BatchExtractionRequest,
+    request: Request,
+) -> BatchExtractionResponse:
+    """Extract content from multiple sources.
+
+    Args:
+        body: Batch extraction request.
+        request: FastAPI request object.
+
+    Returns:
+        Batch extraction response with results for each source.
+    """
+    config = get_config(request)
+    extractor = Extractor(config)
+
+    results: list[BatchResultItem] = []
+    succeeded = 0
+    failed = 0
+
+    # Create semaphore for concurrency control
+    semaphore = asyncio.Semaphore(body.max_concurrent)
+
+    async def extract_one(source: str) -> BatchResultItem:
+        """Extract a single source with semaphore."""
+        async with semaphore:
+            start_time = time.perf_counter()
+            try:
+                if source.startswith(("http://", "https://")):
+                    result = await extractor.extract(source)
+                else:
+                    result = extractor.extract_text(source)
+
+                processing_time = (time.perf_counter() - start_time) * 1000
+                api_result = _result_to_api(result, processing_time)
+
+                return BatchResultItem(
+                    source=source,
+                    success=True,
+                    result=api_result,
+                )
+            except Exception as e:
+                return BatchResultItem(
+                    source=source,
+                    success=False,
+                    error=str(e),
+                )
+
+    # Run extractions concurrently
+    tasks = [extract_one(source) for source in body.sources]
+    batch_results = await asyncio.gather(*tasks)
+
+    for item in batch_results:
+        results.append(item)
+        if item.success:
+            succeeded += 1
+        else:
+            failed += 1
+
+    return BatchExtractionResponse(
+        success=(failed == 0),
+        results=results,
+        summary=BatchSummary(
+            total=len(body.sources),
+            succeeded=succeeded,
+            failed=failed,
+        ),
+    )

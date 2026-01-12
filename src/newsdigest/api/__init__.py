@@ -1,7 +1,9 @@
 """REST API for NewsDigest."""
 
+from newsdigest.api.app import app, create_app, get_config
+
 __all__ = [
-    # API components will be exported as implemented:
-    # "app",
-    # "create_app",
+    "app",
+    "create_app",
+    "get_config",
 ]
