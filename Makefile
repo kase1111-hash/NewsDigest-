@@ -4,7 +4,7 @@
 .PHONY: help install install-dev install-all clean test lint format type-check \
         build build-wheel build-sdist build-zip build-exe package package-release \
         docker docker-build docker-up docker-down docker-logs \
-        docs docs-serve setup-models venv
+        docs docs-serve setup-models venv version release-patch release-minor release-major
 
 # Default target
 .DEFAULT_GOAL := help
@@ -198,17 +198,23 @@ docs-serve: ## Serve documentation locally
 	mkdocs serve
 
 # =============================================================================
-# Release
+# Release (Semantic Versioning)
 # =============================================================================
+
+version: ## Show current version
+	@cat VERSION
 
 release-patch: ## Bump patch version (0.0.x)
 	@echo "$(BLUE)Bumping patch version...$(NC)"
-	bumpversion patch
+	bump2version patch
+	@echo "$(GREEN)New version: $$(cat VERSION)$(NC)"
 
 release-minor: ## Bump minor version (0.x.0)
 	@echo "$(BLUE)Bumping minor version...$(NC)"
-	bumpversion minor
+	bump2version minor
+	@echo "$(GREEN)New version: $$(cat VERSION)$(NC)"
 
 release-major: ## Bump major version (x.0.0)
 	@echo "$(BLUE)Bumping major version...$(NC)"
-	bumpversion major
+	bump2version major
+	@echo "$(GREEN)New version: $$(cat VERSION)$(NC)"

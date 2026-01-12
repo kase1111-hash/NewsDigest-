@@ -1,0 +1,42 @@
+# Semantic Versioning Configuration for NewsDigest
+# Uses bump2version (pip install bump2version)
+#
+# Usage:
+#   bump2version patch  # 0.1.0 -> 0.1.1
+#   bump2version minor  # 0.1.0 -> 0.2.0
+#   bump2version major  # 0.1.0 -> 1.0.0
+#
+# Or use Makefile targets:
+#   make release-patch
+#   make release-minor
+#   make release-major
+
+[tool.bumpversion]
+current_version = "0.1.0"
+commit = true
+tag = true
+tag_name = "v{new_version}"
+tag_message = "Release v{new_version}"
+message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+
+# Files to update when version is bumped
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/newsdigest/version.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "VERSION"
+
+[[tool.bumpversion.files]]
+filename = "docker/Dockerfile"
+search = "# Version: {current_version}"
+replace = "# Version: {new_version}"

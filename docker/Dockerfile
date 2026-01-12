@@ -1,4 +1,5 @@
 # NewsDigest Dockerfile
+# Version: 0.1.0
 # Multi-stage build for optimized image size
 
 # =============================================================================
