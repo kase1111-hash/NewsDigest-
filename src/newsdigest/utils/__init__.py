@@ -52,6 +52,22 @@ from newsdigest.utils.text import (
     word_count,
     word_in_set,
 )
+from newsdigest.utils.metrics import (
+    CounterStats,
+    GaugeStats,
+    MetricNames,
+    MetricsCollector,
+    TimingStats,
+    get_metrics,
+    get_stats,
+    increment,
+    record_histogram,
+    record_timing,
+    reset_metrics,
+    set_gauge,
+    timed,
+    timer,
+)
 from newsdigest.utils.validation import (
     SanitizationError,
     ValidationError,
@@ -138,4 +154,19 @@ __all__ = [
     "error_boundary",
     "format_exception",
     "get_exception_chain",
+    # Metrics utilities
+    "MetricsCollector",
+    "TimingStats",
+    "CounterStats",
+    "GaugeStats",
+    "MetricNames",
+    "get_metrics",
+    "reset_metrics",
+    "record_timing",
+    "increment",
+    "set_gauge",
+    "record_histogram",
+    "timer",
+    "timed",
+    "get_stats",
 ]

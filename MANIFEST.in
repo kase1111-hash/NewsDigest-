@@ -1,0 +1,45 @@
+# MANIFEST.in - Source distribution configuration
+# Controls which files are included in sdist packages
+
+# Include project metadata
+include LICENSE
+include README.md
+include CHANGELOG.md
+include pyproject.toml
+include requirements.txt
+include requirements-dev.txt
+
+# Include configuration files
+include ruff.toml
+include .pre-commit-config.yaml
+
+# Include type hints marker
+include src/newsdigest/py.typed
+
+# Include all source code
+recursive-include src *.py
+recursive-include src *.pyi
+
+# Include config templates
+recursive-include config *.yml
+recursive-include config *.yaml
+
+# Exclude tests from distribution (they're in a separate package if needed)
+prune tests
+
+# Exclude development and build artifacts
+prune .github
+prune docker
+prune scripts
+prune docs
+prune htmlcov
+prune .pytest_cache
+prune .mypy_cache
+prune .ruff_cache
+
+# Exclude compiled files
+global-exclude *.py[cod]
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude *.egg-info

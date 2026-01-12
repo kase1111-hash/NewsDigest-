@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "newsdigest"
-version = "0.1.0"
+version = "1.0.0"
 description = "Semantic compression engine for news - extract signal from noise"
 readme = "README.md"
 license = {text = "Polyform Small Business License 1.0.0"}
