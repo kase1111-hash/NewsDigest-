@@ -1,0 +1,63 @@
+# NewsDigest Production Environment Configuration
+# This configuration is optimized for reliability and performance
+
+# Extraction settings - strict quality control
+extraction:
+  mode: standard
+  min_sentence_density: 0.3
+  unnamed_sources: flag
+  speculation: remove
+  max_hedges_per_sentence: 2
+  emotional_language: remove
+  quotes:
+    keep_attributed: true
+    keep_unattributed: false
+    flag_circular: true
+
+# Digest settings - production capacity
+digest:
+  period: 24h
+  max_items: 100
+  clustering_enabled: true
+  deduplication_enabled: true
+  similarity_threshold: 0.85
+  min_novelty_score: 0.3
+
+# Output settings - clean output
+output:
+  format: markdown
+  show_stats: true
+  include_links: true
+  show_warnings: false  # Hide warnings in production output
+
+# NLP settings - use larger model if available
+spacy_model: ${SPACY_MODEL:-en_core_web_sm}
+
+# HTTP settings - robust configuration
+http_timeout: 30
+http_retries: 3
+requests_per_second: 1.0
+
+# Cache settings - aggressive caching
+cache_enabled: true
+cache_ttl: 3600  # 1 hour
+cache_max_size: 1000
+
+# Logging - production level
+logging:
+  level: WARNING
+  format: structured
+  include_timestamps: true
+
+# Error reporting - production monitoring
+error_reporting:
+  enabled: true
+  sentry_dsn: ${SENTRY_DSN}
+  environment: production
+  sample_rate: 0.1  # Sample 10% of transactions
+
+# Feature flags - stable features only
+features:
+  experimental_analyzers: false
+  debug_mode: false
+  profiling: false

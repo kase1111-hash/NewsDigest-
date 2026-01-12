@@ -1,0 +1,61 @@
+# NewsDigest Development Environment Configuration
+# This configuration is optimized for local development and debugging
+
+# Extraction settings - more permissive for testing
+extraction:
+  mode: standard
+  min_sentence_density: 0.2
+  unnamed_sources: flag
+  speculation: flag  # Flag but don't remove for debugging
+  max_hedges_per_sentence: 3
+  emotional_language: flag
+  quotes:
+    keep_attributed: true
+    keep_unattributed: true  # Keep for testing
+    flag_circular: true
+
+# Digest settings
+digest:
+  period: 24h
+  max_items: 50
+  clustering_enabled: true
+  deduplication_enabled: true
+  similarity_threshold: 0.80  # Lower threshold for testing
+  min_novelty_score: 0.2
+
+# Output settings - verbose for debugging
+output:
+  format: markdown
+  show_stats: true
+  include_links: true
+  show_warnings: true
+
+# NLP settings
+spacy_model: en_core_web_sm
+
+# HTTP settings - shorter timeouts for faster feedback
+http_timeout: 15
+http_retries: 2
+requests_per_second: 2.0  # Higher rate for local testing
+
+# Cache settings - smaller cache, shorter TTL
+cache_enabled: true
+cache_ttl: 300  # 5 minutes
+cache_max_size: 100
+
+# Logging
+logging:
+  level: DEBUG
+  format: detailed
+  include_timestamps: true
+
+# Error reporting - disabled in development
+error_reporting:
+  enabled: false
+  sentry_dsn: null
+
+# Feature flags
+features:
+  experimental_analyzers: true
+  debug_mode: true
+  profiling: true
