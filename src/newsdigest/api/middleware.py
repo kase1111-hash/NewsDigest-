@@ -6,8 +6,8 @@ Provides authentication, rate limiting, and request tracking.
 import hashlib
 import time
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
@@ -66,7 +66,7 @@ class APIKeyManager:
         Returns:
             New API key object.
         """
-        import secrets
+        import secrets  # noqa: PLC0415
 
         # Generate a secure random key
         raw_key = secrets.token_urlsafe(32)

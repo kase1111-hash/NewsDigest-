@@ -287,6 +287,41 @@ class RateLimitError(IngestError):
 
 
 # =============================================================================
+# VALIDATION ERRORS
+# =============================================================================
+
+
+class ValidationError(NewsDigestError):
+    """Validation error for input data.
+
+    Raised when input data fails validation.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        field: str | None = None,
+        value: Any = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize validation error.
+
+        Args:
+            message: Error message.
+            field: Field name that failed validation.
+            value: Invalid value.
+            **kwargs: Additional arguments for parent.
+        """
+        super().__init__(message, **kwargs)
+        self.field = field
+        self.value = value
+        if field:
+            self.details["field"] = field
+        if value is not None:
+            self.details["value"] = repr(value)
+
+
+# =============================================================================
 # FORMATTER ERRORS
 # =============================================================================
 

@@ -1,11 +1,12 @@
 """Health check endpoint for NewsDigest API."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter
 
 from newsdigest.api.models import HealthResponse, HealthStatus
 from newsdigest.version import __version__
+
 
 router = APIRouter()
 
@@ -20,5 +21,5 @@ async def health_check() -> HealthResponse:
     return HealthResponse(
         status=HealthStatus.HEALTHY,
         version=__version__,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )

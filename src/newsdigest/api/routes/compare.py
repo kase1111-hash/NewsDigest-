@@ -4,14 +4,15 @@ import time
 
 from fastapi import APIRouter, Request
 
-from newsdigest.api.app import get_config
 from newsdigest.api.models import (
     CompareRequest,
     CompareResponse,
     DiffItem,
     Statistics,
 )
+from newsdigest.api.utils import get_config
 from newsdigest.core.extractor import Extractor
+
 
 router = APIRouter()
 
