@@ -1,8 +1,10 @@
 """API route handlers for NewsDigest."""
 
+from newsdigest.api.routes import compare, digest, extract, health
+
 __all__ = [
-    # Routes will be exported as implemented:
-    # "extract_router",
-    # "digest_router",
-    # "webhooks_router",
+    "compare",
+    "digest",
+    "extract",
+    "health",
 ]

@@ -17,15 +17,24 @@ def cli(ctx: click.Context) -> None:
 
 
 # Import and register commands
-# These will be implemented in their respective modules
-# from newsdigest.cli.extract import extract
-# from newsdigest.cli.compare import compare
-# from newsdigest.cli.stats import stats
-# from newsdigest.cli.digest import digest
-# from newsdigest.cli.sources import sources
-# from newsdigest.cli.watch import watch
-# from newsdigest.cli.analytics import analytics
-# from newsdigest.cli.setup import setup_cmd
+# These imports must come after the cli group is defined
+from newsdigest.cli.analytics import analytics  # noqa: E402
+from newsdigest.cli.compare import compare  # noqa: E402
+from newsdigest.cli.digest import digest  # noqa: E402
+from newsdigest.cli.extract import extract  # noqa: E402
+from newsdigest.cli.setup import setup_cmd  # noqa: E402
+from newsdigest.cli.sources import sources  # noqa: E402
+from newsdigest.cli.stats import stats  # noqa: E402
+from newsdigest.cli.watch import watch  # noqa: E402
+
+cli.add_command(extract)
+cli.add_command(compare)
+cli.add_command(stats)
+cli.add_command(digest)
+cli.add_command(sources)
+cli.add_command(watch)
+cli.add_command(analytics)
+cli.add_command(setup_cmd, name="setup")
 
 
 if __name__ == "__main__":
