@@ -37,6 +37,7 @@ MANIFEST
 # PyInstaller
 *.manifest
 *.spec
+!newsdigest.spec
 
 # Installer logs
 pip-log.txt
