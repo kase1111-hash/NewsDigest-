@@ -1,7 +1,6 @@
 """Base class for all semantic analyzers."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from newsdigest.core.result import Sentence
 
@@ -13,7 +12,7 @@ class BaseAnalyzer(ABC):
     updates their properties (scores, flags), and returns the list.
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """
         Initialize analyzer with configuration.
 
@@ -33,7 +32,7 @@ class BaseAnalyzer(ABC):
         return self.config.get("enabled", True)
 
     @abstractmethod
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """
         Analyze sentences and update their properties.
 

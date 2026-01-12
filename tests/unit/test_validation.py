@@ -4,17 +4,16 @@ import pytest
 
 from newsdigest.utils.validation import (
     ValidationError,
-    SanitizationError,
-    validate_url,
-    validate_url_strict,
     is_valid_url,
     sanitize_html,
     sanitize_text,
-    validate_text_content,
-    validate_range,
-    validate_positive_int,
     validate_enum,
     validate_extraction_mode,
+    validate_positive_int,
+    validate_range,
+    validate_text_content,
+    validate_url,
+    validate_url_strict,
 )
 
 

@@ -6,13 +6,14 @@ and reduces code duplication (DRY principle).
 """
 
 import re
-from typing import FrozenSet, List, Pattern, Set
+from re import Pattern
+
 
 # =============================================================================
 # COMMON STOP WORDS
 # =============================================================================
 
-STOP_WORDS: FrozenSet[str] = frozenset({
+STOP_WORDS: frozenset[str] = frozenset({
     # Articles
     "a", "an", "the",
     # Be verbs
@@ -92,7 +93,7 @@ def fix_punctuation_spacing(text: str) -> str:
     return text
 
 
-def get_content_words(text: str, stop_words: Set[str] | None = None) -> List[str]:
+def get_content_words(text: str, stop_words: set[str] | None = None) -> list[str]:
     """Extract content words (non-stop words) from text.
 
     Args:
@@ -130,7 +131,7 @@ def word_count(text: str) -> int:
 # PATTERN MATCHING UTILITIES
 # =============================================================================
 
-def compile_patterns(patterns: List[str], flags: int = re.IGNORECASE) -> List[Pattern]:
+def compile_patterns(patterns: list[str], flags: int = re.IGNORECASE) -> list[Pattern]:
     """Compile a list of regex patterns.
 
     Args:
@@ -143,7 +144,7 @@ def compile_patterns(patterns: List[str], flags: int = re.IGNORECASE) -> List[Pa
     return [re.compile(p, flags) for p in patterns]
 
 
-def match_any_pattern(text: str, patterns: List[Pattern]) -> bool:
+def match_any_pattern(text: str, patterns: list[Pattern]) -> bool:
     """Check if text matches any of the patterns.
 
     Args:
@@ -159,7 +160,7 @@ def match_any_pattern(text: str, patterns: List[Pattern]) -> bool:
     return False
 
 
-def find_all_matches(text: str, patterns: List[Pattern]) -> List[str]:
+def find_all_matches(text: str, patterns: list[Pattern]) -> list[str]:
     """Find all pattern matches in text.
 
     Args:
@@ -176,7 +177,7 @@ def find_all_matches(text: str, patterns: List[Pattern]) -> List[str]:
     return matches
 
 
-def word_in_set(word: str, word_set: Set[str]) -> bool:
+def word_in_set(word: str, word_set: set[str]) -> bool:
     """Check if word (cleaned) is in a set.
 
     Args:
@@ -288,7 +289,7 @@ def has_excessive_punctuation(text: str) -> bool:
 # TEXT EXTRACTION UTILITIES
 # =============================================================================
 
-def extract_quoted_content(text: str) -> List[str]:
+def extract_quoted_content(text: str) -> list[str]:
     """Extract all quoted content from text.
 
     Args:
@@ -310,7 +311,7 @@ def extract_quoted_content(text: str) -> List[str]:
     return quotes
 
 
-def remove_words(text: str, words: List[str]) -> str:
+def remove_words(text: str, words: list[str]) -> str:
     """Remove specific words from text.
 
     Args:

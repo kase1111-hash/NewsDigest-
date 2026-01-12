@@ -28,6 +28,7 @@ from newsdigest.exceptions import (
 )
 from newsdigest.version import __version__
 
+
 __all__ = [
     # Version
     "__version__",

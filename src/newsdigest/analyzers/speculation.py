@@ -1,14 +1,13 @@
 """Speculation content stripper for NewsDigest."""
 
 import re
-from typing import List
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence, SentenceCategory
 
 
 # Modal verbs indicating speculation
-MODAL_VERBS: List[str] = [
+MODAL_VERBS: list[str] = [
     "could",
     "might",
     "may",
@@ -17,7 +16,7 @@ MODAL_VERBS: List[str] = [
 ]
 
 # Hedging words and phrases
-HEDGING_WORDS: List[str] = [
+HEDGING_WORDS: list[str] = [
     "potentially",
     "possibly",
     "perhaps",
@@ -34,7 +33,7 @@ HEDGING_WORDS: List[str] = [
 ]
 
 # Uncertainty phrases
-UNCERTAINTY_PHRASES: List[str] = [
+UNCERTAINTY_PHRASES: list[str] = [
     r"it appears",
     r"it seems",
     r"is thought to",
@@ -68,7 +67,7 @@ UNCERTAINTY_PHRASES: List[str] = [
 ]
 
 # Future speculation
-FUTURE_SPECULATION: List[str] = [
+FUTURE_SPECULATION: list[str] = [
     r"is expected to",
     r"are expected to",
     r"will likely",
@@ -120,7 +119,7 @@ class SpeculationStripper(BaseAnalyzer):
         self.speculation_threshold = self.config.get("speculation_threshold", 0.5)
         self.mode = self.config.get("mode", "remove")  # keep, flag, remove
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for speculation.
 
         Args:
@@ -205,7 +204,7 @@ class SpeculationStripper(BaseAnalyzer):
 
         return round(normalized_score, 2), marker_count
 
-    def get_speculation_markers(self, sentence: Sentence) -> List[str]:
+    def get_speculation_markers(self, sentence: Sentence) -> list[str]:
         """Get list of speculation markers found in sentence.
 
         Args:

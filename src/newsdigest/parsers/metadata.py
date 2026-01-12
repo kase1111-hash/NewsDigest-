@@ -1,8 +1,7 @@
 """Metadata parser for NewsDigest."""
 
 import json
-import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from bs4 import BeautifulSoup
 
@@ -18,7 +17,7 @@ class MetadataParser:
     - Schema.org markup
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize metadata parser.
 
         Args:
@@ -26,7 +25,7 @@ class MetadataParser:
         """
         self.config = config or {}
 
-    def parse(self, html: str) -> Dict[str, Any]:
+    def parse(self, html: str) -> dict[str, Any]:
         """Extract metadata from HTML.
 
         Args:
@@ -39,7 +38,7 @@ class MetadataParser:
             return {}
 
         soup = BeautifulSoup(html, "lxml")
-        metadata: Dict[str, Any] = {}
+        metadata: dict[str, Any] = {}
 
         # Extract from meta tags
         self._parse_meta_tags(soup, metadata)
@@ -66,7 +65,7 @@ class MetadataParser:
 
         return metadata
 
-    def _parse_meta_tags(self, soup: BeautifulSoup, metadata: Dict[str, Any]) -> None:
+    def _parse_meta_tags(self, soup: BeautifulSoup, metadata: dict[str, Any]) -> None:
         """Parse standard meta tags.
 
         Args:
@@ -98,7 +97,7 @@ class MetadataParser:
                     metadata[key] = meta["content"]
                     break
 
-    def _parse_open_graph(self, soup: BeautifulSoup, metadata: Dict[str, Any]) -> None:
+    def _parse_open_graph(self, soup: BeautifulSoup, metadata: dict[str, Any]) -> None:
         """Parse Open Graph metadata.
 
         Args:
@@ -125,7 +124,7 @@ class MetadataParser:
                 metadata[key] = meta["content"]
 
     def _parse_twitter_cards(
-        self, soup: BeautifulSoup, metadata: Dict[str, Any]
+        self, soup: BeautifulSoup, metadata: dict[str, Any]
     ) -> None:
         """Parse Twitter card metadata.
 
@@ -151,7 +150,7 @@ class MetadataParser:
                 else:
                     metadata[key] = meta["content"]
 
-    def _parse_json_ld(self, soup: BeautifulSoup, metadata: Dict[str, Any]) -> None:
+    def _parse_json_ld(self, soup: BeautifulSoup, metadata: dict[str, Any]) -> None:
         """Parse JSON-LD structured data.
 
         Args:
@@ -168,7 +167,7 @@ class MetadataParser:
                 continue
 
     def _extract_from_json_ld(
-        self, data: Any, metadata: Dict[str, Any]
+        self, data: Any, metadata: dict[str, Any]
     ) -> None:
         """Extract metadata from JSON-LD object.
 
@@ -236,7 +235,7 @@ class MetadataParser:
                 if isinstance(publisher, dict):
                     metadata["site_name"] = publisher.get("name")
 
-    def get_canonical_url(self, html: str) -> Optional[str]:
+    def get_canonical_url(self, html: str) -> str | None:
         """Get canonical URL from HTML.
 
         Args:
@@ -259,7 +258,7 @@ class MetadataParser:
 
         return None
 
-    def get_all_metadata(self, html: str) -> Dict[str, Any]:
+    def get_all_metadata(self, html: str) -> dict[str, Any]:
         """Get all metadata including raw tags.
 
         Args:

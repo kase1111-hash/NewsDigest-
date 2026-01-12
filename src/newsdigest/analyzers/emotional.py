@@ -1,6 +1,5 @@
 """Emotional language detector for NewsDigest."""
 
-from typing import List, Set
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence, SentenceCategory
@@ -14,7 +13,7 @@ from newsdigest.utils.text import (
 
 
 # Emotional activation words
-EMOTIONAL_ACTIVATION: Set[str] = {
+EMOTIONAL_ACTIVATION: set[str] = {
     "shocking",
     "stunning",
     "alarming",
@@ -50,7 +49,7 @@ EMOTIONAL_ACTIVATION: Set[str] = {
 }
 
 # Superlatives and hyperbole
-SUPERLATIVES: Set[str] = {
+SUPERLATIVES: set[str] = {
     "biggest",
     "largest",
     "worst",
@@ -74,7 +73,7 @@ SUPERLATIVES: Set[str] = {
 }
 
 # Urgency words
-URGENCY_WORDS: Set[str] = {
+URGENCY_WORDS: set[str] = {
     "breaking",
     "urgent",
     "critical",
@@ -92,7 +91,7 @@ URGENCY_WORDS: Set[str] = {
 }
 
 # Fear/anger words
-FEAR_ANGER_WORDS: Set[str] = {
+FEAR_ANGER_WORDS: set[str] = {
     "terrifying",
     "frightening",
     "scary",
@@ -156,7 +155,7 @@ class EmotionalDetector(BaseAnalyzer):
         # Stats tracking
         self.words_removed = 0
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for emotional language.
 
         Args:
@@ -200,7 +199,7 @@ class EmotionalDetector(BaseAnalyzer):
 
         return sentences
 
-    def _score_emotional(self, sentence: Sentence) -> tuple[float, List[str]]:
+    def _score_emotional(self, sentence: Sentence) -> tuple[float, list[str]]:
         """Calculate emotional score for a sentence.
 
         Args:

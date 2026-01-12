@@ -5,11 +5,11 @@ These tests verify that analyzers work correctly together.
 
 import pytest
 
-from newsdigest.analyzers.filler import FillerDetector
-from newsdigest.analyzers.speculation import SpeculationDetector
 from newsdigest.analyzers.emotional import EmotionalDetector
-from newsdigest.analyzers.sources import SourceDetector
+from newsdigest.analyzers.filler import FillerDetector
 from newsdigest.analyzers.quotes import QuoteExtractor
+from newsdigest.analyzers.sources import SourceDetector
+from newsdigest.analyzers.speculation import SpeculationDetector
 
 
 class TestAnalyzerChain:

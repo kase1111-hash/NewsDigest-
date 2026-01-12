@@ -1,7 +1,6 @@
 """Base class for all ingestors."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from newsdigest.core.article import Article
 
@@ -13,7 +12,7 @@ class BaseIngestor(ABC):
     and converting it into Article objects.
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """
         Initialize ingestor with configuration.
 
@@ -41,7 +40,7 @@ class BaseIngestor(ABC):
         pass
 
     @abstractmethod
-    async def ingest_batch(self, sources: List[str]) -> List[Article]:
+    async def ingest_batch(self, sources: list[str]) -> list[Article]:
         """
         Ingest content from multiple sources.
 

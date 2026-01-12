@@ -1,20 +1,18 @@
 """Tests for secrets management."""
 
-import os
+
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 from newsdigest.config.secrets import (
-    SecretValue,
     EnvLoader,
-    SecretsManager,
     SecretMasker,
+    SecretsManager,
+    SecretValue,
     get_env,
     get_secret,
+    init_env,
     mask_secrets,
     register_secret,
-    init_env,
 )
 
 

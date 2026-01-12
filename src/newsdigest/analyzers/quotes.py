@@ -1,14 +1,13 @@
 """Quote isolator for NewsDigest."""
 
 import re
-from typing import List, Optional, Tuple
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence, SentenceCategory
 
 
 # Attribution patterns
-ATTRIBUTION_PATTERNS: List[str] = [
+ATTRIBUTION_PATTERNS: list[str] = [
     r'(?:said|says|told|stated|announced|declared|claimed|reported|confirmed|denied|acknowledged|admitted|argued|asserted|wrote|explained|added|warned)\s+(?:that\s+)?["\']',
     r'["\'][^"\']+["\'],?\s+(?:said|says|told|stated|announced|declared|claimed)',
     r'according\s+to\s+[^,]+,?\s+["\']',
@@ -45,7 +44,7 @@ class QuoteIsolator(BaseAnalyzer):
         self.circular_quotes = 0
         self.unattributed_quotes = 0
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for quotes.
 
         Args:
@@ -62,7 +61,7 @@ class QuoteIsolator(BaseAnalyzer):
         self.unattributed_quotes = 0
 
         # Track context for circular quote detection
-        recent_content: List[str] = []
+        recent_content: list[str] = []
 
         for i, sentence in enumerate(sentences):
             if not sentence.keep:
@@ -101,8 +100,8 @@ class QuoteIsolator(BaseAnalyzer):
         return sentences
 
     def _analyze_quote(
-        self, sentence: Sentence, recent_content: List[str]
-    ) -> Optional[Tuple[str, bool]]:
+        self, sentence: Sentence, recent_content: list[str]
+    ) -> tuple[str, bool] | None:
         """Analyze a potential quote sentence.
 
         Args:
@@ -180,7 +179,7 @@ class QuoteIsolator(BaseAnalyzer):
 
         return False
 
-    def _extract_quoted_content(self, text: str) -> Optional[str]:
+    def _extract_quoted_content(self, text: str) -> str | None:
         """Extract quoted content from text.
 
         Args:
@@ -206,7 +205,7 @@ class QuoteIsolator(BaseAnalyzer):
 
         return None
 
-    def _is_circular(self, quoted: str, recent_content: List[str]) -> bool:
+    def _is_circular(self, quoted: str, recent_content: list[str]) -> bool:
         """Check if quote repeats recent content.
 
         Args:
@@ -237,7 +236,7 @@ class QuoteIsolator(BaseAnalyzer):
 
         return False
 
-    def _get_content_words(self, text: str) -> List[str]:
+    def _get_content_words(self, text: str) -> list[str]:
         """Extract content words from text.
 
         Args:

@@ -105,8 +105,15 @@ type-check: ## Run type checker (mypy)
 	@echo "$(BLUE)Running type checker...$(NC)"
 	mypy src/
 
-check: lint type-check test ## Run all checks (lint, type-check, test)
+security-scan: ## Run security vulnerability scan (bandit)
+	@echo "$(BLUE)Running security scan...$(NC)"
+	bandit -r src/ -c pyproject.toml
+
+check: lint type-check security-scan test ## Run all checks (lint, type-check, security, test)
 	@echo "$(GREEN)All checks passed!$(NC)"
+
+check-ci: lint type-check security-scan ## Run CI checks (no tests)
+	@echo "$(GREEN)CI checks passed!$(NC)"
 
 # =============================================================================
 # Build

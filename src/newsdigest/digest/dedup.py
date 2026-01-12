@@ -1,8 +1,6 @@
 """Deduplication for NewsDigest."""
 
 import re
-from collections import Counter
-from typing import Dict, List, Optional, Set, Tuple
 
 from newsdigest.core.result import ExtractionResult
 
@@ -14,7 +12,7 @@ class Deduplicator:
     and merges metadata from duplicates.
     """
 
-    def __init__(self, config: Optional[dict] = None) -> None:
+    def __init__(self, config: dict | None = None) -> None:
         """Initialize deduplicator.
 
         Args:
@@ -24,8 +22,8 @@ class Deduplicator:
         self.threshold = self.config.get("similarity_threshold", 0.85)
 
     def deduplicate(
-        self, articles: List[ExtractionResult]
-    ) -> List[ExtractionResult]:
+        self, articles: list[ExtractionResult]
+    ) -> list[ExtractionResult]:
         """Remove duplicate articles, keeping the most complete.
 
         Args:
@@ -57,7 +55,7 @@ class Deduplicator:
 
         return result
 
-    def _get_content_words(self, text: str) -> Set[str]:
+    def _get_content_words(self, text: str) -> set[str]:
         """Extract content words from text.
 
         Args:
@@ -77,7 +75,7 @@ class Deduplicator:
         words = re.findall(r'\b\w+\b', text.lower())
         return {w for w in words if w not in stop_words and len(w) > 2}
 
-    def _jaccard_similarity(self, set1: Set[str], set2: Set[str]) -> float:
+    def _jaccard_similarity(self, set1: set[str], set2: set[str]) -> float:
         """Calculate Jaccard similarity.
 
         Args:
@@ -95,9 +93,9 @@ class Deduplicator:
 
     def _find_clusters(
         self,
-        articles: List[ExtractionResult],
-        word_sets: List[Set[str]],
-    ) -> List[List[int]]:
+        articles: list[ExtractionResult],
+        word_sets: list[set[str]],
+    ) -> list[list[int]]:
         """Find clusters of similar articles.
 
         Args:
@@ -128,7 +126,7 @@ class Deduplicator:
                     union(i, j)
 
         # Group by cluster
-        clusters_dict: Dict[int, List[int]] = {}
+        clusters_dict: dict[int, list[int]] = {}
         for i in range(n):
             root = find(i)
             if root not in clusters_dict:
@@ -138,7 +136,7 @@ class Deduplicator:
         return list(clusters_dict.values())
 
     def _merge_cluster(
-        self, articles: List[ExtractionResult]
+        self, articles: list[ExtractionResult]
     ) -> ExtractionResult:
         """Merge a cluster of similar articles into one.
 
@@ -168,8 +166,8 @@ class Deduplicator:
         return primary
 
     def find_duplicates(
-        self, articles: List[ExtractionResult]
-    ) -> List[Tuple[int, int, float]]:
+        self, articles: list[ExtractionResult]
+    ) -> list[tuple[int, int, float]]:
         """Find all duplicate pairs with similarity scores.
 
         Args:
@@ -189,7 +187,7 @@ class Deduplicator:
 
         return duplicates
 
-    def get_duplicate_count(self, articles: List[ExtractionResult]) -> int:
+    def get_duplicate_count(self, articles: list[ExtractionResult]) -> int:
         """Count number of duplicate articles removed.
 
         Args:

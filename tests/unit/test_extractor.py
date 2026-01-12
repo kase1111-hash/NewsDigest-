@@ -2,9 +2,8 @@
 
 import pytest
 
-from newsdigest.core.extractor import Extractor
 from newsdigest.config.settings import Config
-from newsdigest.core.article import Article, SourceType
+from newsdigest.core.extractor import Extractor
 
 
 class TestExtractorInitialization:

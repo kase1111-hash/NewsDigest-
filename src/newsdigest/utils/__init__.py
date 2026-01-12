@@ -1,11 +1,36 @@
 """Utility modules for NewsDigest."""
 
+from newsdigest.utils.errors import (
+    ErrorContext,
+    ErrorReporter,
+    ErrorSeverity,
+    add_breadcrumb,
+    capture_errors,
+    capture_exception,
+    capture_message,
+    configure_error_reporting,
+    error_boundary,
+    format_exception,
+    get_error_context,
+    get_error_reporter,
+    get_exception_chain,
+)
 from newsdigest.utils.http import (
     HTTPClient,
     RateLimiter,
     RetryConfig,
     fetch_url,
     get_shared_client,
+)
+from newsdigest.utils.logging import (
+    LoggedOperation,
+    get_logger,
+    init_logging,
+    log_error,
+    log_extraction_complete,
+    log_extraction_start,
+    log_performance,
+    setup_logging,
 )
 from newsdigest.utils.text import (
     STOP_WORDS,
@@ -45,31 +70,7 @@ from newsdigest.utils.validation import (
     validate_url,
     validate_url_strict,
 )
-from newsdigest.utils.logging import (
-    LoggedOperation,
-    get_logger,
-    init_logging,
-    log_error,
-    log_extraction_complete,
-    log_extraction_start,
-    log_performance,
-    setup_logging,
-)
-from newsdigest.utils.errors import (
-    ErrorContext,
-    ErrorReporter,
-    ErrorSeverity,
-    add_breadcrumb,
-    capture_errors,
-    capture_exception,
-    capture_message,
-    configure_error_reporting,
-    error_boundary,
-    format_exception,
-    get_error_context,
-    get_error_reporter,
-    get_exception_chain,
-)
+
 
 __all__ = [
     # HTTP utilities

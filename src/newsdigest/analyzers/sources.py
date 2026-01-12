@@ -1,14 +1,13 @@
 """Source validator for NewsDigest."""
 
 import re
-from typing import List, Tuple
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence
 
 
 # Patterns for named source attribution
-NAMED_SOURCE_PATTERNS: List[str] = [
+NAMED_SOURCE_PATTERNS: list[str] = [
     # Direct attribution: "said John Smith"
     r'(?:said|says|told|tells|stated|announced|confirmed|denied|claimed|reported)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)',
     # Title attribution: "CEO John Smith said"
@@ -22,7 +21,7 @@ NAMED_SOURCE_PATTERNS: List[str] = [
 ]
 
 # Patterns for unnamed sources (flag these)
-UNNAMED_SOURCE_PATTERNS: List[str] = [
+UNNAMED_SOURCE_PATTERNS: list[str] = [
     r"sources?\s+(?:say|said|indicate|suggest|claim|report)",
     r"sources?\s+familiar\s+with",
     r"sources?\s+close\s+to",
@@ -71,10 +70,10 @@ class SourceValidator(BaseAnalyzer):
         self.mode = self.config.get("unnamed_sources", "flag")  # keep, flag, remove
 
         # Stats
-        self.named_sources: List[str] = []
+        self.named_sources: list[str] = []
         self.unnamed_source_count = 0
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for source attribution.
 
         Args:
@@ -114,7 +113,7 @@ class SourceValidator(BaseAnalyzer):
 
         return sentences
 
-    def _find_named_sources(self, text: str) -> List[str]:
+    def _find_named_sources(self, text: str) -> list[str]:
         """Find named sources in text.
 
         Args:
@@ -210,7 +209,7 @@ class SourceValidator(BaseAnalyzer):
                 return True
         return False
 
-    def get_source_warnings(self, sentences: List[Sentence]) -> List[dict]:
+    def get_source_warnings(self, sentences: list[Sentence]) -> list[dict]:
         """Generate warnings for unnamed sources.
 
         Args:
@@ -233,7 +232,7 @@ class SourceValidator(BaseAnalyzer):
                 )
         return warnings
 
-    def get_unique_named_sources(self) -> List[str]:
+    def get_unique_named_sources(self) -> list[str]:
         """Get list of unique named sources found.
 
         Returns:

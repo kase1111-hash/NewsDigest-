@@ -19,7 +19,7 @@ Exception Hierarchy:
     └── FormatterError
 """
 
-from typing import Any, Optional
+from typing import Any
 
 
 class NewsDigestError(Exception):
@@ -33,8 +33,8 @@ class NewsDigestError(Exception):
         self,
         message: str,
         *args: Any,
-        cause: Optional[Exception] = None,
-        details: Optional[dict] = None,
+        cause: Exception | None = None,
+        details: dict | None = None,
     ) -> None:
         """Initialize exception.
 
@@ -90,7 +90,7 @@ class InvalidConfigError(ConfigurationError):
     def __init__(
         self,
         message: str,
-        field: Optional[str] = None,
+        field: str | None = None,
         value: Any = None,
         **kwargs: Any,
     ) -> None:
@@ -129,7 +129,7 @@ class ContentExtractionError(ExtractionError):
     def __init__(
         self,
         message: str,
-        url: Optional[str] = None,
+        url: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize content extraction error.
@@ -154,7 +154,7 @@ class AnalysisError(ExtractionError):
     def __init__(
         self,
         message: str,
-        analyzer: Optional[str] = None,
+        analyzer: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize analysis error.
@@ -179,7 +179,7 @@ class PipelineError(ExtractionError):
     def __init__(
         self,
         message: str,
-        stage: Optional[str] = None,
+        stage: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize pipeline error.
@@ -215,8 +215,8 @@ class FetchError(IngestError):
     def __init__(
         self,
         message: str,
-        url: Optional[str] = None,
-        status_code: Optional[int] = None,
+        url: str | None = None,
+        status_code: int | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize fetch error.
@@ -245,7 +245,7 @@ class ParseError(IngestError):
     def __init__(
         self,
         message: str,
-        content_type: Optional[str] = None,
+        content_type: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize parse error.
@@ -270,7 +270,7 @@ class RateLimitError(IngestError):
     def __init__(
         self,
         message: str,
-        retry_after: Optional[int] = None,
+        retry_after: int | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize rate limit error.
@@ -300,7 +300,7 @@ class FormatterError(NewsDigestError):
     def __init__(
         self,
         message: str,
-        format_type: Optional[str] = None,
+        format_type: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize formatter error.
@@ -353,7 +353,7 @@ class DeduplicationError(DigestError):
 def wrap_exception(
     exc: Exception,
     wrapper_class: type,
-    message: Optional[str] = None,
+    message: str | None = None,
 ) -> NewsDigestError:
     """Wrap an exception in a NewsDigest exception.
 

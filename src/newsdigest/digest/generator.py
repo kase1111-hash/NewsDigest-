@@ -3,7 +3,7 @@
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from newsdigest.config.settings import Config
 from newsdigest.core.extractor import Extractor
@@ -21,12 +21,12 @@ class DigestItem:
     id: str
     summary: str
     article_count: int = 1
-    sources: List[str] = field(default_factory=list)
-    urls: List[str] = field(default_factory=list)
-    topic: Optional[str] = None
-    subtopic: Optional[str] = None
-    earliest: Optional[datetime] = None
-    latest: Optional[datetime] = None
+    sources: list[str] = field(default_factory=list)
+    urls: list[str] = field(default_factory=list)
+    topic: str | None = None
+    subtopic: str | None = None
+    earliest: datetime | None = None
+    latest: datetime | None = None
     original_words: int = 0
     compressed_words: int = 0
 
@@ -37,7 +37,7 @@ class DigestTopic:
 
     name: str
     emoji: str = ""
-    items: List[DigestItem] = field(default_factory=list)
+    items: list[DigestItem] = field(default_factory=list)
 
 
 @dataclass
@@ -46,7 +46,7 @@ class Digest:
 
     generated_at: datetime = field(default_factory=datetime.utcnow)
     period: str = "24h"
-    topics: List[DigestTopic] = field(default_factory=list)
+    topics: list[DigestTopic] = field(default_factory=list)
     sources_processed: int = 0
     articles_analyzed: int = 0
     total_original_words: int = 0
@@ -69,14 +69,14 @@ class DigestGenerator:
     6. Formats output
     """
 
-    def __init__(self, config: Optional[Config] = None) -> None:
+    def __init__(self, config: Config | None = None) -> None:
         """Initialize digest generator.
 
         Args:
             config: Configuration object.
         """
         self.config = config or Config()
-        self._sources: List[dict] = []
+        self._sources: list[dict] = []
 
         # Initialize components
         self._extractor = Extractor(config)
@@ -96,8 +96,8 @@ class DigestGenerator:
     def add_rss(
         self,
         url: str,
-        name: Optional[str] = None,
-        category: Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
     ) -> None:
         """Add RSS feed to digest sources.
 
@@ -126,7 +126,7 @@ class DigestGenerator:
             **kwargs,
         })
 
-    def add_url(self, url: str, name: Optional[str] = None) -> None:
+    def add_url(self, url: str, name: str | None = None) -> None:
         """Add single URL to digest sources.
 
         Args:
@@ -143,7 +143,7 @@ class DigestGenerator:
         self,
         period: str = "24h",
         format: str = "markdown",
-    ) -> Union[str, Digest]:
+    ) -> str | Digest:
         """Generate digest for specified period (async).
 
         Args:
@@ -192,7 +192,7 @@ class DigestGenerator:
         self,
         period: str = "24h",
         format: str = "markdown",
-    ) -> Union[str, Digest]:
+    ) -> str | Digest:
         """Generate digest for specified period (sync).
 
         Args:
@@ -205,8 +205,8 @@ class DigestGenerator:
         return asyncio.run(self.generate_async(period, format))
 
     async def _fetch_all_sources(
-        self, since: Optional[datetime]
-    ) -> List[Dict[str, Any]]:
+        self, since: datetime | None
+    ) -> list[dict[str, Any]]:
         """Fetch articles from all configured sources.
 
         Args:
@@ -249,8 +249,8 @@ class DigestGenerator:
         return all_articles
 
     async def _extract_all(
-        self, articles: List[Dict[str, Any]]
-    ) -> List[ExtractionResult]:
+        self, articles: list[dict[str, Any]]
+    ) -> list[ExtractionResult]:
         """Extract content from all articles.
 
         Args:
@@ -280,7 +280,7 @@ class DigestGenerator:
 
         return results
 
-    def _parse_period(self, period: str) -> Optional[datetime]:
+    def _parse_period(self, period: str) -> datetime | None:
         """Parse period string to datetime.
 
         Args:
@@ -306,8 +306,8 @@ class DigestGenerator:
 
     def _build_digest(
         self,
-        clusters: Dict[str, List[ExtractionResult]],
-        all_results: List[ExtractionResult],
+        clusters: dict[str, list[ExtractionResult]],
+        all_results: list[ExtractionResult],
         period: str,
         duplicates_removed: int,
     ) -> Digest:
@@ -372,7 +372,7 @@ class DigestGenerator:
         """Clear all configured sources."""
         self._sources = []
 
-    def get_sources(self) -> List[dict]:
+    def get_sources(self) -> list[dict]:
         """Get list of configured sources.
 
         Returns:

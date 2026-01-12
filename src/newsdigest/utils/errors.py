@@ -10,13 +10,15 @@ This module provides centralized error reporting with support for:
 import os
 import sys
 import traceback
+from collections.abc import Callable
 from contextlib import contextmanager
 from datetime import datetime
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Any, TypeVar
 
 from newsdigest.utils.logging import get_logger
+
 
 # Type variable for decorator
 F = TypeVar("F", bound=Callable[..., Any])
@@ -50,10 +52,10 @@ class ErrorContext:
 
     def __init__(self) -> None:
         """Initialize error context."""
-        self._breadcrumbs: List[Dict[str, Any]] = []
-        self._tags: Dict[str, str] = {}
-        self._extra: Dict[str, Any] = {}
-        self._user: Optional[Dict[str, Any]] = None
+        self._breadcrumbs: list[dict[str, Any]] = []
+        self._tags: dict[str, str] = {}
+        self._extra: dict[str, Any] = {}
+        self._user: dict[str, Any] | None = None
         self._max_breadcrumbs: int = 100
 
     def add_breadcrumb(
@@ -61,7 +63,7 @@ class ErrorContext:
         message: str,
         category: str = "default",
         level: str = "info",
-        data: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
     ) -> None:
         """Add a breadcrumb for debugging context.
 
@@ -106,9 +108,9 @@ class ErrorContext:
 
     def set_user(
         self,
-        user_id: Optional[str] = None,
-        email: Optional[str] = None,
-        username: Optional[str] = None,
+        user_id: str | None = None,
+        email: str | None = None,
+        username: str | None = None,
     ) -> None:
         """Set user context.
 
@@ -132,13 +134,13 @@ class ErrorContext:
         self._extra.clear()
         self._user = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert context to dictionary.
 
         Returns:
             Context dictionary.
         """
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "breadcrumbs": self._breadcrumbs.copy(),
         }
         if self._tags:
@@ -185,11 +187,11 @@ class ErrorReporter:
         """Initialize error reporter."""
         self._initialized = False
         self._sentry_available = False
-        self._dsn: Optional[str] = None
+        self._dsn: str | None = None
         self._environment: str = "development"
-        self._release: Optional[str] = None
+        self._release: str | None = None
         self._sample_rate: float = 1.0
-        self._error_handlers: List[Callable[[Exception, Dict[str, Any]], None]] = []
+        self._error_handlers: list[Callable[[Exception, dict[str, Any]], None]] = []
 
         # Check for sentry-sdk
         try:
@@ -200,9 +202,9 @@ class ErrorReporter:
 
     def configure(
         self,
-        dsn: Optional[str] = None,
-        environment: Optional[str] = None,
-        release: Optional[str] = None,
+        dsn: str | None = None,
+        environment: str | None = None,
+        release: str | None = None,
         sample_rate: float = 1.0,
         attach_stacktrace: bool = True,
         send_default_pii: bool = False,
@@ -273,7 +275,7 @@ class ErrorReporter:
 
     def add_error_handler(
         self,
-        handler: Callable[[Exception, Dict[str, Any]], None],
+        handler: Callable[[Exception, dict[str, Any]], None],
     ) -> None:
         """Add a custom error handler.
 
@@ -284,11 +286,11 @@ class ErrorReporter:
 
     def capture_exception(
         self,
-        exception: Optional[Exception] = None,
+        exception: Exception | None = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
-        extra: Optional[Dict[str, Any]] = None,
-        tags: Optional[Dict[str, str]] = None,
-    ) -> Optional[str]:
+        extra: dict[str, Any] | None = None,
+        tags: dict[str, str] | None = None,
+    ) -> str | None:
         """Capture and report an exception.
 
         Args:
@@ -364,9 +366,9 @@ class ErrorReporter:
         self,
         message: str,
         severity: ErrorSeverity = ErrorSeverity.INFO,
-        extra: Optional[Dict[str, Any]] = None,
-        tags: Optional[Dict[str, str]] = None,
-    ) -> Optional[str]:
+        extra: dict[str, Any] | None = None,
+        tags: dict[str, str] | None = None,
+    ) -> str | None:
         """Capture and report a message.
 
         Args:
@@ -409,7 +411,7 @@ class ErrorReporter:
         message: str,
         category: str = "default",
         level: str = "info",
-        data: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
     ) -> None:
         """Add a breadcrumb to global context.
 
@@ -452,9 +454,9 @@ class ErrorReporter:
 
     def set_user(
         self,
-        user_id: Optional[str] = None,
-        email: Optional[str] = None,
-        username: Optional[str] = None,
+        user_id: str | None = None,
+        email: str | None = None,
+        username: str | None = None,
     ) -> None:
         """Set user context.
 
@@ -504,9 +506,9 @@ def get_error_reporter() -> ErrorReporter:
 
 
 def configure_error_reporting(
-    dsn: Optional[str] = None,
-    environment: Optional[str] = None,
-    release: Optional[str] = None,
+    dsn: str | None = None,
+    environment: str | None = None,
+    release: str | None = None,
     sample_rate: float = 1.0,
 ) -> bool:
     """Configure global error reporting.
@@ -529,9 +531,9 @@ def configure_error_reporting(
 
 
 def capture_exception(
-    exception: Optional[Exception] = None,
+    exception: Exception | None = None,
     **kwargs: Any,
-) -> Optional[str]:
+) -> str | None:
     """Capture an exception using global reporter.
 
     Args:
@@ -548,7 +550,7 @@ def capture_message(
     message: str,
     severity: ErrorSeverity = ErrorSeverity.INFO,
     **kwargs: Any,
-) -> Optional[str]:
+) -> str | None:
     """Capture a message using global reporter.
 
     Args:
@@ -566,7 +568,7 @@ def add_breadcrumb(
     message: str,
     category: str = "default",
     level: str = "info",
-    data: Optional[Dict[str, Any]] = None,
+    data: dict[str, Any] | None = None,
 ) -> None:
     """Add a breadcrumb using global reporter.
 
@@ -587,7 +589,7 @@ def add_breadcrumb(
 def capture_errors(
     severity: ErrorSeverity = ErrorSeverity.ERROR,
     reraise: bool = True,
-    extra_context: Optional[Callable[..., Dict[str, Any]]] = None,
+    extra_context: Callable[..., dict[str, Any]] | None = None,
 ) -> Callable[[F], F]:
     """Decorator to capture exceptions from functions.
 
@@ -652,7 +654,7 @@ def error_boundary(
     operation: str,
     severity: ErrorSeverity = ErrorSeverity.ERROR,
     reraise: bool = True,
-    extra: Optional[Dict[str, Any]] = None,
+    extra: dict[str, Any] | None = None,
 ):
     """Context manager for capturing errors within a scope.
 
@@ -726,7 +728,7 @@ def format_exception(
     return "\n".join(parts)
 
 
-def get_exception_chain(exception: Exception) -> List[Exception]:
+def get_exception_chain(exception: Exception) -> list[Exception]:
     """Get the chain of exceptions (cause chain).
 
     Args:

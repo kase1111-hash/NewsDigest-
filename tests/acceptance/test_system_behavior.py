@@ -4,13 +4,12 @@ These tests verify end-to-end system behavior and quality attributes.
 """
 
 import json
+
 import pytest
-import time
 
 from newsdigest.config.settings import Config
 from newsdigest.core.extractor import Extractor
 from newsdigest.core.result import ExtractionResult
-from newsdigest.exceptions import NewsDigestError
 
 
 class TestExtractionQuality:

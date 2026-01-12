@@ -1,14 +1,13 @@
 """Claim extractor for NewsDigest."""
 
 import re
-from typing import List, Optional, Tuple
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import Claim, ClaimType, Sentence
 
 
 # Patterns for statistical claims
-STATISTICAL_PATTERNS: List[str] = [
+STATISTICAL_PATTERNS: list[str] = [
     r"\d+(?:\.\d+)?%",  # Percentages
     r"\$\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:million|billion|trillion))?",  # Dollar amounts
     r"\d+(?:,\d{3})*(?:\.\d+)?\s*(?:million|billion|trillion)",  # Large numbers
@@ -18,7 +17,7 @@ STATISTICAL_PATTERNS: List[str] = [
 ]
 
 # Attribution verbs
-ATTRIBUTION_VERBS: List[str] = [
+ATTRIBUTION_VERBS: list[str] = [
     "said", "says", "stated", "announced", "declared", "claimed", "reported",
     "confirmed", "denied", "acknowledged", "admitted", "argued", "asserted",
     "contended", "maintained", "noted", "observed", "pointed out", "remarked",
@@ -50,9 +49,9 @@ class ClaimExtractor(BaseAnalyzer):
         self.min_confidence = self.config.get("min_confidence", 0.3)
 
         # Collected claims
-        self.claims: List[Claim] = []
+        self.claims: list[Claim] = []
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences to extract claims.
 
         Args:
@@ -77,7 +76,7 @@ class ClaimExtractor(BaseAnalyzer):
 
     def _extract_claims(
         self, sentence: Sentence, index: int
-    ) -> List[Claim]:
+    ) -> list[Claim]:
         """Extract claims from a sentence.
 
         Args:
@@ -115,7 +114,7 @@ class ClaimExtractor(BaseAnalyzer):
 
     def _extract_statistical_claim(
         self, text: str, sentence: Sentence, index: int
-    ) -> Optional[Claim]:
+    ) -> Claim | None:
         """Extract statistical claim if present.
 
         Args:
@@ -143,7 +142,7 @@ class ClaimExtractor(BaseAnalyzer):
 
     def _extract_quote_claim(
         self, text: str, sentence: Sentence, index: int
-    ) -> Optional[Claim]:
+    ) -> Claim | None:
         """Extract quote claim if present.
 
         Args:
@@ -176,7 +175,7 @@ class ClaimExtractor(BaseAnalyzer):
 
     def _extract_attribution_claim(
         self, text: str, sentence: Sentence, index: int
-    ) -> Optional[Claim]:
+    ) -> Claim | None:
         """Extract attribution claim if present.
 
         Args:
@@ -203,7 +202,7 @@ class ClaimExtractor(BaseAnalyzer):
 
     def _extract_factual_claim(
         self, text: str, sentence: Sentence, index: int
-    ) -> Optional[Claim]:
+    ) -> Claim | None:
         """Extract factual claim from declarative sentence.
 
         Args:
@@ -314,7 +313,7 @@ class ClaimExtractor(BaseAnalyzer):
 
         return round(min(1.0, max(0.0, score)), 2)
 
-    def get_claims(self) -> List[Claim]:
+    def get_claims(self) -> list[Claim]:
         """Get extracted claims.
 
         Returns:
@@ -322,7 +321,7 @@ class ClaimExtractor(BaseAnalyzer):
         """
         return self.claims
 
-    def get_claims_by_type(self, claim_type: ClaimType) -> List[Claim]:
+    def get_claims_by_type(self, claim_type: ClaimType) -> list[Claim]:
         """Get claims filtered by type.
 
         Args:

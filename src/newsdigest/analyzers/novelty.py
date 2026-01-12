@@ -1,7 +1,6 @@
 """Novelty scorer for NewsDigest."""
 
 from collections import Counter
-from typing import Dict, List, Set
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import Sentence
@@ -25,7 +24,7 @@ class NoveltyScorer(BaseAnalyzer):
         self.min_novelty = self.config.get("min_novelty_score", 0.3)
         self.decay_factor = self.config.get("decay_factor", 0.9)
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for novelty.
 
         Args:
@@ -41,7 +40,7 @@ class NoveltyScorer(BaseAnalyzer):
             return sentences
 
         # Track seen information
-        seen_entities: Set[str] = set()
+        seen_entities: set[str] = set()
         seen_terms: Counter = Counter()
 
         for i, sentence in enumerate(sentences):
@@ -62,7 +61,7 @@ class NoveltyScorer(BaseAnalyzer):
     def _calculate_novelty(
         self,
         sentence: Sentence,
-        seen_entities: Set[str],
+        seen_entities: set[str],
         seen_terms: Counter,
         position: int,
     ) -> float:
@@ -116,7 +115,7 @@ class NoveltyScorer(BaseAnalyzer):
         return round(min(1.0, max(0.0, combined)), 2)
 
     def _entity_novelty(
-        self, sentence: Sentence, seen_entities: Set[str]
+        self, sentence: Sentence, seen_entities: set[str]
     ) -> float:
         """Calculate novelty based on entities.
 
@@ -145,7 +144,7 @@ class NoveltyScorer(BaseAnalyzer):
 
         return novelty
 
-    def _term_novelty(self, words: List[str], seen_terms: Counter) -> float:
+    def _term_novelty(self, words: list[str], seen_terms: Counter) -> float:
         """Calculate novelty based on terms.
 
         Args:
@@ -168,7 +167,7 @@ class NoveltyScorer(BaseAnalyzer):
 
         return new_count / len(words)
 
-    def _get_content_terms(self, text: str) -> List[str]:
+    def _get_content_terms(self, text: str) -> list[str]:
         """Extract content terms from text.
 
         Args:
@@ -203,7 +202,7 @@ class NoveltyScorer(BaseAnalyzer):
     def _update_seen(
         self,
         sentence: Sentence,
-        seen_entities: Set[str],
+        seen_entities: set[str],
         seen_terms: Counter,
     ) -> None:
         """Update seen information with sentence content.

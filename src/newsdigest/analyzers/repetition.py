@@ -1,7 +1,5 @@
 """Repetition collapser for NewsDigest."""
 
-from collections import Counter
-from typing import Dict, List, Set, Tuple
 
 from newsdigest.analyzers.base import BaseAnalyzer
 from newsdigest.core.result import RemovalReason, Sentence
@@ -31,7 +29,7 @@ class RepetitionCollapser(BaseAnalyzer):
         # Stats
         self.collapsed_count = 0
 
-    def analyze(self, sentences: List[Sentence]) -> List[Sentence]:
+    def analyze(self, sentences: list[Sentence]) -> list[Sentence]:
         """Analyze sentences for repetition.
 
         Args:
@@ -70,8 +68,8 @@ class RepetitionCollapser(BaseAnalyzer):
         return sentences
 
     def _find_similar_clusters(
-        self, sentences: List[Sentence], active_indices: List[int]
-    ) -> List[Set[int]]:
+        self, sentences: list[Sentence], active_indices: list[int]
+    ) -> list[set[int]]:
         """Find clusters of similar sentences.
 
         Args:
@@ -82,12 +80,12 @@ class RepetitionCollapser(BaseAnalyzer):
             List of sets of similar sentence indices.
         """
         # Compute word sets for each active sentence
-        word_sets: Dict[int, Set[str]] = {}
+        word_sets: dict[int, set[str]] = {}
         for idx in active_indices:
             word_sets[idx] = self._get_content_words(sentences[idx].text)
 
         # Build similarity graph
-        similar_pairs: List[Tuple[int, int]] = []
+        similar_pairs: list[tuple[int, int]] = []
         for i, idx1 in enumerate(active_indices):
             for idx2 in active_indices[i + 1:]:
                 similarity = self._jaccard_similarity(word_sets[idx1], word_sets[idx2])
@@ -100,7 +98,7 @@ class RepetitionCollapser(BaseAnalyzer):
         # Filter to only clusters with more than one member
         return [c for c in clusters if len(c) > 1]
 
-    def _get_content_words(self, text: str) -> Set[str]:
+    def _get_content_words(self, text: str) -> set[str]:
         """Extract content words from text.
 
         Args:
@@ -134,7 +132,7 @@ class RepetitionCollapser(BaseAnalyzer):
 
         return content_words
 
-    def _jaccard_similarity(self, set1: Set[str], set2: Set[str]) -> float:
+    def _jaccard_similarity(self, set1: set[str], set2: set[str]) -> float:
         """Calculate Jaccard similarity between two sets.
 
         Args:
@@ -153,8 +151,8 @@ class RepetitionCollapser(BaseAnalyzer):
         return intersection / union if union > 0 else 0.0
 
     def _build_clusters(
-        self, pairs: List[Tuple[int, int]], all_indices: List[int]
-    ) -> List[Set[int]]:
+        self, pairs: list[tuple[int, int]], all_indices: list[int]
+    ) -> list[set[int]]:
         """Build clusters from pairs using union-find.
 
         Args:
@@ -165,7 +163,7 @@ class RepetitionCollapser(BaseAnalyzer):
             List of cluster sets.
         """
         # Initialize parent for union-find
-        parent: Dict[int, int] = {idx: idx for idx in all_indices}
+        parent: dict[int, int] = {idx: idx for idx in all_indices}
 
         def find(x: int) -> int:
             if parent[x] != x:
@@ -182,7 +180,7 @@ class RepetitionCollapser(BaseAnalyzer):
             union(idx1, idx2)
 
         # Group by root
-        clusters_dict: Dict[int, Set[int]] = {}
+        clusters_dict: dict[int, set[int]] = {}
         for idx in all_indices:
             root = find(idx)
             if root not in clusters_dict:

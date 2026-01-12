@@ -1,12 +1,11 @@
 """Configuration management for NewsDigest."""
 
-from newsdigest.config.settings import Config
 from newsdigest.config.secrets import (
     AWSSecretsManager,
     EnvLoader,
     SecretMasker,
-    SecretValue,
     SecretsManager,
+    SecretValue,
     get_env,
     get_env_loader,
     get_secret,
@@ -15,6 +14,8 @@ from newsdigest.config.secrets import (
     mask_secrets,
     register_secret,
 )
+from newsdigest.config.settings import Config
+
 
 __all__ = [
     "Config",

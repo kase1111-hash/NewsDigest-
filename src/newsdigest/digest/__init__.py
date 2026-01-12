@@ -4,11 +4,12 @@ from newsdigest.digest.clustering import TopicClusterer
 from newsdigest.digest.dedup import Deduplicator
 from newsdigest.digest.generator import Digest, DigestGenerator, DigestItem, DigestTopic
 
+
 __all__ = [
-    "DigestGenerator",
+    "Deduplicator",
     "Digest",
+    "DigestGenerator",
     "DigestItem",
     "DigestTopic",
     "TopicClusterer",
-    "Deduplicator",
 ]

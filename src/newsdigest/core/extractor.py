@@ -2,7 +2,6 @@
 
 import asyncio
 import re
-from typing import List, Optional, Union
 from urllib.parse import urlparse
 
 from newsdigest.config.settings import Config
@@ -12,23 +11,24 @@ from newsdigest.core.result import (
     Claim,
     ExtractionResult,
     ExtractionStatistics,
-    RemovedContent,
     RemovalReason,
+    RemovedContent,
     Sentence,
 )
 from newsdigest.exceptions import (
-    ContentExtractionError,
     ExtractionError,
-    FetchError,
-    FormatterError,
     IngestError,
-    PipelineError,
 )
 from newsdigest.formatters import JSONFormatter, MarkdownFormatter, TextFormatter
 from newsdigest.ingestors import RSSParser, TextIngestor, URLFetcher
 from newsdigest.parsers import ArticleExtractor
-from newsdigest.utils.logging import get_logger, log_extraction_complete, log_extraction_start
-from newsdigest.utils.errors import add_breadcrumb, capture_exception, ErrorSeverity
+from newsdigest.utils.errors import ErrorSeverity, add_breadcrumb, capture_exception
+from newsdigest.utils.logging import (
+    get_logger,
+    log_extraction_complete,
+    log_extraction_start,
+)
+
 
 # Module logger
 logger = get_logger(__name__)
@@ -47,7 +47,7 @@ class Extractor:
 
     def __init__(
         self,
-        config: Optional[Config] = None,
+        config: Config | None = None,
         mode: str = "standard",
     ) -> None:
         """Initialize extractor with configuration.
@@ -209,11 +209,11 @@ class Extractor:
 
     async def extract_batch(
         self,
-        sources: List[str],
+        sources: list[str],
         parallel: bool = True,
         max_workers: int = 5,
         fail_fast: bool = False,
-    ) -> List[ExtractionResult]:
+    ) -> list[ExtractionResult]:
         """Extract content from multiple sources.
 
         Args:
@@ -231,7 +231,7 @@ class Extractor:
         if parallel:
             semaphore = asyncio.Semaphore(max_workers)
 
-            async def extract_one(src: str) -> Optional[ExtractionResult]:
+            async def extract_one(src: str) -> ExtractionResult | None:
                 async with semaphore:
                     try:
                         return await self.extract(src)
@@ -401,7 +401,7 @@ class Extractor:
             sentences=sentences,
         )
 
-    def _build_removed_list(self, sentences: List[Sentence]) -> List[RemovedContent]:
+    def _build_removed_list(self, sentences: list[Sentence]) -> list[RemovedContent]:
         """Build list of removed content.
 
         Args:
@@ -428,7 +428,7 @@ class Extractor:
                 )
         return removed
 
-    def _build_warnings(self, sentences: List[Sentence]) -> List[dict]:
+    def _build_warnings(self, sentences: list[Sentence]) -> list[dict]:
         """Build warnings list from sentences.
 
         Args:
@@ -451,7 +451,7 @@ class Extractor:
                 )
         return warnings
 
-    def _get_named_sources(self, sentences: List[Sentence]) -> List[str]:
+    def _get_named_sources(self, sentences: list[Sentence]) -> list[str]:
         """Get list of named sources from sentences.
 
         Args:
@@ -469,9 +469,9 @@ class Extractor:
     def _calculate_statistics(
         self,
         article: Article,
-        all_sentences: List[Sentence],
-        kept_sentences: List[Sentence],
-        claims: List[Claim],
+        all_sentences: list[Sentence],
+        kept_sentences: list[Sentence],
+        claims: list[Claim],
     ) -> ExtractionStatistics:
         """Calculate extraction statistics.
 
@@ -534,7 +534,7 @@ class Extractor:
             named_sources=named_sources,
         )
 
-    def _calculate_density(self, text: str, claims: List[Claim]) -> float:
+    def _calculate_density(self, text: str, claims: list[Claim]) -> float:
         """Calculate semantic density score.
 
         Args:

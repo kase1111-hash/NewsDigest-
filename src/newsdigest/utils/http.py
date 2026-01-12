@@ -8,7 +8,7 @@ This module provides a shared async HTTP client with:
 """
 
 import asyncio
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 
@@ -49,7 +49,7 @@ class RetryConfig:
         base_delay: float = 1.0,
         max_delay: float = 30.0,
         exponential_base: float = 2.0,
-        retry_status_codes: Optional[set] = None,
+        retry_status_codes: set | None = None,
     ) -> None:
         """Initialize retry configuration.
 
@@ -103,8 +103,8 @@ class HTTPClient:
         self,
         timeout: float = 30.0,
         rate_limit: float = 2.0,
-        retry_config: Optional[RetryConfig] = None,
-        headers: Optional[Dict[str, str]] = None,
+        retry_config: RetryConfig | None = None,
+        headers: dict[str, str] | None = None,
     ) -> None:
         """Initialize HTTP client.
 
@@ -126,7 +126,7 @@ class HTTPClient:
         if headers:
             self._headers.update(headers)
 
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     async def _get_client(self) -> httpx.AsyncClient:
         """Get or create async client."""
@@ -141,7 +141,7 @@ class HTTPClient:
     async def get(
         self,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make GET request with rate limiting and retry.
@@ -162,9 +162,9 @@ class HTTPClient:
     async def post(
         self,
         url: str,
-        data: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        data: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make POST request with rate limiting and retry.
@@ -190,7 +190,7 @@ class HTTPClient:
         self,
         method: str,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make HTTP request with rate limiting and retry.
@@ -208,7 +208,7 @@ class HTTPClient:
             httpx.HTTPError: If request fails after retries.
         """
         client = await self._get_client()
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(self.retry_config.max_retries + 1):
             try:
@@ -262,7 +262,7 @@ class HTTPClient:
 
 
 # Shared client instance for module-level use
-_shared_client: Optional[HTTPClient] = None
+_shared_client: HTTPClient | None = None
 
 
 async def get_shared_client(
@@ -289,7 +289,7 @@ async def get_shared_client(
 async def fetch_url(
     url: str,
     timeout: float = 30.0,
-    headers: Optional[Dict[str, str]] = None,
+    headers: dict[str, str] | None = None,
 ) -> str:
     """Simple URL fetch function.
 

@@ -5,11 +5,12 @@ from newsdigest.ingestors.rss import RSSParser
 from newsdigest.ingestors.text import TextIngestor
 from newsdigest.ingestors.url import URLFetcher
 
+
 __all__ = [
     "BaseIngestor",
-    "URLFetcher",
     "RSSParser",
     "TextIngestor",
+    "URLFetcher",
     # Future ingestors:
     # "NewsAPIClient",
     # "EmailIngester",

@@ -1,28 +1,29 @@
 """Core extraction engine components."""
 
 from newsdigest.core.article import Article, SourceType
+from newsdigest.core.extractor import Extractor
 from newsdigest.core.result import (
-    ExtractionResult,
-    ExtractionStatistics,
     Claim,
     ClaimType,
-    RemovedContent,
+    ExtractionResult,
+    ExtractionStatistics,
     RemovalReason,
+    RemovedContent,
     Sentence,
     SentenceCategory,
 )
-from newsdigest.core.extractor import Extractor
+
 
 __all__ = [
     "Article",
-    "SourceType",
-    "ExtractionResult",
-    "ExtractionStatistics",
     "Claim",
     "ClaimType",
-    "RemovedContent",
+    "ExtractionResult",
+    "ExtractionStatistics",
+    "Extractor",
     "RemovalReason",
+    "RemovedContent",
     "Sentence",
     "SentenceCategory",
-    "Extractor",
+    "SourceType",
 ]

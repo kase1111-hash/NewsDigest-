@@ -8,17 +8,21 @@ These tests verify that the system handles security concerns properly:
 """
 
 import json
-import pytest
-import os
 
+import pytest
+
+from newsdigest.config.secrets import (
+    SecretMasker,
+    SecretValue,
+    get_secret,
+    mask_secrets,
+)
 from newsdigest.config.settings import Config
-from newsdigest.config.secrets import SecretValue, SecretMasker, get_secret, mask_secrets
 from newsdigest.core.extractor import Extractor
 from newsdigest.utils.validation import (
-    validate_url,
     sanitize_html,
-    sanitize_text,
     validate_text_content,
+    validate_url,
 )
 
 
@@ -269,7 +273,7 @@ class TestSecretProtection:
 
     def test_registered_secrets_masked(self) -> None:
         """Manually registered secrets are masked."""
-        from newsdigest.config.secrets import register_secret, mask_secrets
+        from newsdigest.config.secrets import register_secret
 
         register_secret("my-custom-secret-value")
 
@@ -299,7 +303,7 @@ class TestEnvironmentSecrets:
         """Secrets from environment are wrapped in SecretValue."""
         monkeypatch.setenv("NEWSDIGEST_SECRET_KEY", "test-secret")
 
-        from newsdigest.config.secrets import init_env, get_secret
+        from newsdigest.config.secrets import init_env
         init_env()
 
         secret = get_secret("SECRET_KEY")
@@ -475,6 +479,7 @@ class TestSecurityBestPractices:
         # This is a static check that would normally be done by linting
         # Here we just verify the extractors don't use dangerous patterns
         import inspect
+
         from newsdigest.core import extractor
 
         source = inspect.getsource(extractor)
@@ -492,6 +497,7 @@ class TestSecurityBestPractices:
     def test_no_shell_injection_vectors(self) -> None:
         """Verify no shell command execution in core modules."""
         import inspect
+
         from newsdigest.core import extractor
 
         source = inspect.getsource(extractor)
