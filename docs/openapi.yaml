@@ -1,0 +1,711 @@
+openapi: 3.1.0
+info:
+  title: NewsDigest API
+  description: |
+    NewsDigest REST API for semantic news compression.
+
+    Transform hours of news content into minutes of essential information
+    by removing speculation, emotional language, and redundant content.
+
+    ## Features
+    - Extract and compress content from URLs, RSS feeds, or raw text
+    - Batch processing for multiple sources
+    - Generate digests from multiple news sources
+    - Multiple output formats (JSON, Markdown, Text)
+
+    ## Authentication
+    API key authentication via `X-API-Key` header (when enabled).
+
+    ## Rate Limiting
+    Default: 100 requests/minute per API key.
+  version: 0.1.0
+  contact:
+    name: NewsDigest Support
+    url: https://github.com/kase1111-hash/NewsDigest
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.newsdigest.example.com/v1
+    description: Production server
+
+tags:
+  - name: Extraction
+    description: Content extraction and compression endpoints
+  - name: Digest
+    description: Multi-source digest generation
+  - name: Health
+    description: Service health and status
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Returns service health status and version information
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                version: 0.1.0
+                timestamp: '2024-01-15T10:30:00Z'
+
+  /extract:
+    post:
+      tags:
+        - Extraction
+      summary: Extract content from source
+      description: |
+        Extract and compress content from a URL, RSS feed, or raw text.
+
+        The extraction process:
+        1. Fetches content from the source
+        2. Parses and cleans HTML
+        3. Applies NLP analysis
+        4. Removes speculation, emotional language, and filler
+        5. Returns compressed content with statistics
+      operationId: extractContent
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractionRequest'
+            examples:
+              url:
+                summary: Extract from URL
+                value:
+                  source: https://example.com/news/article
+                  mode: standard
+                  format: json
+              rss:
+                summary: Extract from RSS feed
+                value:
+                  source: https://example.com/feed.rss
+                  mode: standard
+                  format: markdown
+              text:
+                summary: Extract from raw text
+                value:
+                  source: "The company reportedly might be planning to potentially..."
+                  mode: aggressive
+                  format: text
+      responses:
+        '200':
+          description: Extraction successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: validation_error
+                message: Invalid source URL format
+                details:
+                  field: source
+                  reason: Must be a valid URL or text content
+        '422':
+          description: Extraction failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: extraction_error
+                message: Failed to extract content from source
+                details:
+                  reason: Content could not be parsed
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /extract/batch:
+    post:
+      tags:
+        - Extraction
+      summary: Batch extract from multiple sources
+      description: |
+        Extract and compress content from multiple sources in a single request.
+        Results are returned in the same order as the input sources.
+        Failed extractions include error details.
+      operationId: extractBatch
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchExtractionRequest'
+            example:
+              sources:
+                - https://example.com/article1
+                - https://example.com/article2
+                - https://example.com/article3
+              mode: standard
+              format: json
+              max_concurrent: 5
+      responses:
+        '200':
+          description: Batch extraction completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchExtractionResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /digest:
+    post:
+      tags:
+        - Digest
+      summary: Generate news digest
+      description: |
+        Generate a comprehensive digest from multiple news sources.
+
+        The digest process:
+        1. Fetches articles from all specified sources
+        2. Extracts and compresses each article
+        3. Clusters related articles by topic
+        4. Deduplicates similar content
+        5. Generates a unified digest with sections
+      operationId: generateDigest
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DigestRequest'
+            example:
+              sources:
+                - type: rss
+                  url: https://news.ycombinator.com/rss
+                  name: Hacker News
+                - type: rss
+                  url: https://feeds.bbci.co.uk/news/technology/rss.xml
+                  name: BBC Tech
+              mode: standard
+              format: markdown
+              max_articles: 20
+              cluster_threshold: 0.7
+      responses:
+        '200':
+          description: Digest generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DigestResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Digest generation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /compare:
+    post:
+      tags:
+        - Extraction
+      summary: Compare original vs compressed content
+      description: |
+        Extract content and return a side-by-side comparison showing
+        what was removed and why. Useful for understanding the
+        compression process.
+      operationId: compareContent
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareRequest'
+            example:
+              source: https://example.com/news/article
+              mode: standard
+      responses:
+        '200':
+          description: Comparison generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompareResponse'
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - version
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          description: Service health status
+        version:
+          type: string
+          description: API version
+        timestamp:
+          type: string
+          format: date-time
+          description: Current server time
+
+    ExtractionRequest:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          type: string
+          description: URL, RSS feed URL, or raw text content
+          minLength: 1
+          maxLength: 100000
+        mode:
+          type: string
+          enum: [conservative, standard, aggressive]
+          default: standard
+          description: |
+            Extraction aggressiveness:
+            - conservative: Keep more content, less compression
+            - standard: Balanced compression (default)
+            - aggressive: Maximum compression
+        format:
+          type: string
+          enum: [json, markdown, text]
+          default: json
+          description: Output format for the extracted content
+
+    ExtractionResponse:
+      type: object
+      required:
+        - success
+        - result
+      properties:
+        success:
+          type: boolean
+          description: Whether extraction succeeded
+        result:
+          $ref: '#/components/schemas/ExtractionResult'
+
+    ExtractionResult:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Article title
+        source_url:
+          type: string
+          format: uri
+          description: Original source URL
+        author:
+          type: string
+          nullable: true
+          description: Article author if available
+        publish_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Publication date if available
+        content:
+          type: string
+          description: Compressed content
+        sentences:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence'
+          description: Analyzed sentences with metadata
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+          description: Factual claims extracted from content
+        statistics:
+          $ref: '#/components/schemas/Statistics'
+        removed_content:
+          type: array
+          items:
+            $ref: '#/components/schemas/RemovedContent'
+          description: Content that was removed with reasons
+
+    Sentence:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Sentence text
+        kept:
+          type: boolean
+          description: Whether sentence was kept in output
+        density_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Information density score
+        has_hedge:
+          type: boolean
+          description: Contains hedging language
+        has_speculation:
+          type: boolean
+          description: Contains speculative content
+        has_emotion:
+          type: boolean
+          description: Contains emotional language
+
+    Claim:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The claim text
+        type:
+          type: string
+          enum: [factual, opinion, prediction, quote]
+          description: Type of claim
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score
+        source_attribution:
+          type: string
+          nullable: true
+          description: Attribution if quoted
+
+    Statistics:
+      type: object
+      properties:
+        original_words:
+          type: integer
+          description: Word count of original content
+        compressed_words:
+          type: integer
+          description: Word count after compression
+        compression_ratio:
+          type: number
+          format: float
+          description: Compression ratio (compressed/original)
+        sentences_kept:
+          type: integer
+          description: Number of sentences kept
+        sentences_removed:
+          type: integer
+          description: Number of sentences removed
+        processing_time_ms:
+          type: number
+          format: float
+          description: Processing time in milliseconds
+        removal_breakdown:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Count of removals by reason
+          example:
+            speculation: 5
+            emotional_language: 3
+            low_density: 2
+
+    RemovedContent:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The removed text
+        reason:
+          type: string
+          enum:
+            - speculation
+            - emotional_language
+            - hedge_word
+            - unnamed_source
+            - low_density
+            - redundant
+            - filler
+          description: Reason for removal
+
+    BatchExtractionRequest:
+      type: object
+      required:
+        - sources
+      properties:
+        sources:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 50
+          description: List of URLs or text content to extract
+        mode:
+          type: string
+          enum: [conservative, standard, aggressive]
+          default: standard
+        format:
+          type: string
+          enum: [json, markdown, text]
+          default: json
+        max_concurrent:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 5
+          description: Maximum concurrent extractions
+
+    BatchExtractionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether all extractions succeeded
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+                description: Original source
+              success:
+                type: boolean
+              result:
+                $ref: '#/components/schemas/ExtractionResult'
+              error:
+                type: string
+                nullable: true
+                description: Error message if extraction failed
+        summary:
+          type: object
+          properties:
+            total:
+              type: integer
+            succeeded:
+              type: integer
+            failed:
+              type: integer
+
+    DigestRequest:
+      type: object
+      required:
+        - sources
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DigestSource'
+          minItems: 1
+          maxItems: 20
+          description: News sources to include in digest
+        mode:
+          type: string
+          enum: [conservative, standard, aggressive]
+          default: standard
+        format:
+          type: string
+          enum: [json, markdown, text]
+          default: markdown
+        max_articles:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Maximum articles per source
+        cluster_threshold:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          default: 0.7
+          description: Similarity threshold for clustering
+
+    DigestSource:
+      type: object
+      required:
+        - type
+        - url
+      properties:
+        type:
+          type: string
+          enum: [rss, url, newsapi]
+          description: Source type
+        url:
+          type: string
+          format: uri
+          description: Source URL
+        name:
+          type: string
+          description: Display name for source
+
+    DigestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        digest:
+          type: object
+          properties:
+            title:
+              type: string
+              description: Digest title
+            generated_at:
+              type: string
+              format: date-time
+            content:
+              type: string
+              description: Formatted digest content
+            sections:
+              type: array
+              items:
+                $ref: '#/components/schemas/DigestSection'
+            statistics:
+              type: object
+              properties:
+                total_articles:
+                  type: integer
+                articles_included:
+                  type: integer
+                clusters:
+                  type: integer
+                total_original_words:
+                  type: integer
+                total_compressed_words:
+                  type: integer
+                overall_compression:
+                  type: number
+                  format: float
+
+    DigestSection:
+      type: object
+      properties:
+        topic:
+          type: string
+          description: Section topic/cluster name
+        articles:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              source:
+                type: string
+              summary:
+                type: string
+              url:
+                type: string
+                format: uri
+
+    CompareRequest:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          type: string
+          description: URL or text to compare
+        mode:
+          type: string
+          enum: [conservative, standard, aggressive]
+          default: standard
+
+    CompareResponse:
+      type: object
+      properties:
+        original:
+          type: string
+          description: Original content
+        compressed:
+          type: string
+          description: Compressed content
+        diff:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [kept, removed]
+              text:
+                type: string
+              reason:
+                type: string
+                nullable: true
+        statistics:
+          $ref: '#/components/schemas/Statistics'
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          enum:
+            - validation_error
+            - extraction_error
+            - rate_limit_exceeded
+            - authentication_error
+            - internal_error
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
+        request_id:
+          type: string
+          description: Request ID for support

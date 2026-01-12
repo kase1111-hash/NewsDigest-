@@ -2,8 +2,9 @@
 # Common development and build commands
 
 .PHONY: help install install-dev install-all clean test lint format type-check \
-        build package docker docker-build docker-up docker-down docker-logs \
-        docs docs-serve setup-models venv
+        build build-wheel build-sdist build-zip build-exe package package-release \
+        docker docker-build docker-up docker-down docker-logs \
+        docs docs-serve setup-models venv version release-patch release-minor release-major
 
 # Default target
 .DEFAULT_GOAL := help
@@ -116,21 +117,35 @@ check-ci: lint type-check security-scan ## Run CI checks (no tests)
 	@echo "$(GREEN)CI checks passed!$(NC)"
 
 # =============================================================================
-# Build
+# Build & Packaging
 # =============================================================================
 
-build: ## Build distribution packages
+build: ## Build distribution packages (wheel + sdist)
 	@echo "$(BLUE)Building distribution packages...$(NC)"
 	$(PYTHON) -m build
 
-package: build ## Build and validate packages
-	@echo "$(BLUE)Validating packages...$(NC)"
-	twine check dist/*
-	@echo "$(GREEN)Packages ready in dist/$(NC)"
+build-wheel: ## Build wheel package only
+	@echo "$(BLUE)Building wheel package...$(NC)"
+	$(PYTHON) -m build --wheel
 
-package-all: ## Build Python packages and Docker images
+build-sdist: ## Build source distribution only
+	@echo "$(BLUE)Building source distribution...$(NC)"
+	$(PYTHON) -m build --sdist
+
+build-zip: ## Build zip archive for distribution
+	@echo "$(BLUE)Building zip archive...$(NC)"
+	./scripts/package.sh --zip
+
+build-exe: ## Build standalone executable (requires PyInstaller)
+	@echo "$(BLUE)Building standalone executable...$(NC)"
+	./scripts/package.sh --exe
+
+package: ## Build all distributable packages (wheel, sdist, zip, exe)
 	@echo "$(BLUE)Building all distributable packages...$(NC)"
 	./scripts/package.sh --all
+
+package-release: clean build-wheel build-sdist build-zip ## Build release packages (wheel, sdist, zip)
+	@echo "$(GREEN)Release packages built in dist/$(NC)"
 
 clean: ## Clean build artifacts
 	@echo "$(BLUE)Cleaning build artifacts...$(NC)"
@@ -183,17 +198,23 @@ docs-serve: ## Serve documentation locally
 	mkdocs serve
 
 # =============================================================================
-# Release
+# Release (Semantic Versioning)
 # =============================================================================
+
+version: ## Show current version
+	@cat VERSION
 
 release-patch: ## Bump patch version (0.0.x)
 	@echo "$(BLUE)Bumping patch version...$(NC)"
-	bumpversion patch
+	bump2version patch
+	@echo "$(GREEN)New version: $$(cat VERSION)$(NC)"
 
 release-minor: ## Bump minor version (0.x.0)
 	@echo "$(BLUE)Bumping minor version...$(NC)"
-	bumpversion minor
+	bump2version minor
+	@echo "$(GREEN)New version: $$(cat VERSION)$(NC)"
 
 release-major: ## Bump major version (x.0.0)
 	@echo "$(BLUE)Bumping major version...$(NC)"
-	bumpversion major
+	bump2version major
+	@echo "$(GREEN)New version: $$(cat VERSION)$(NC)"

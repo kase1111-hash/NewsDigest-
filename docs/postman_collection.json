@@ -1,0 +1,398 @@
+{
+  "info": {
+    "name": "NewsDigest API",
+    "description": "NewsDigest REST API for semantic news compression.\n\nTransform hours of news content into minutes of essential information.",
+    "version": "0.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "your-api-key-here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "description": "Service health and status endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check service health status and version"
+          },
+          "response": [
+            {
+              "name": "Healthy Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": \"healthy\",\n  \"version\": \"0.1.0\",\n  \"timestamp\": \"2024-01-15T10:30:00Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Extraction",
+      "description": "Content extraction and compression endpoints",
+      "item": [
+        {
+          "name": "Extract from URL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"https://example.com/news/article\",\n  \"mode\": \"standard\",\n  \"format\": \"json\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract",
+              "host": ["{{base_url}}"],
+              "path": ["extract"]
+            },
+            "description": "Extract and compress content from a URL"
+          },
+          "response": [
+            {
+              "name": "Successful Extraction",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"result\": {\n    \"title\": \"Example Article\",\n    \"source_url\": \"https://example.com/news/article\",\n    \"content\": \"Compressed article content...\",\n    \"statistics\": {\n      \"original_words\": 500,\n      \"compressed_words\": 150,\n      \"compression_ratio\": 0.3,\n      \"sentences_kept\": 8,\n      \"sentences_removed\": 12\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Extract from RSS Feed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"https://news.ycombinator.com/rss\",\n  \"mode\": \"standard\",\n  \"format\": \"markdown\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract",
+              "host": ["{{base_url}}"],
+              "path": ["extract"]
+            },
+            "description": "Extract and compress content from an RSS feed"
+          },
+          "response": []
+        },
+        {
+          "name": "Extract from Raw Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"The company reportedly might be planning to potentially expand operations. Sources familiar with the matter suggest that this could possibly lead to significant changes. Industry experts believe this development may have far-reaching implications, though nothing has been confirmed yet.\",\n  \"mode\": \"aggressive\",\n  \"format\": \"text\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract",
+              "host": ["{{base_url}}"],
+              "path": ["extract"]
+            },
+            "description": "Extract and compress raw text content"
+          },
+          "response": []
+        },
+        {
+          "name": "Extract with Conservative Mode",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"https://example.com/news/article\",\n  \"mode\": \"conservative\",\n  \"format\": \"json\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract",
+              "host": ["{{base_url}}"],
+              "path": ["extract"]
+            },
+            "description": "Extract with conservative mode (less compression)"
+          },
+          "response": []
+        },
+        {
+          "name": "Extract with Aggressive Mode",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"https://example.com/news/article\",\n  \"mode\": \"aggressive\",\n  \"format\": \"json\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract",
+              "host": ["{{base_url}}"],
+              "path": ["extract"]
+            },
+            "description": "Extract with aggressive mode (maximum compression)"
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Extract",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sources\": [\n    \"https://example.com/article1\",\n    \"https://example.com/article2\",\n    \"https://example.com/article3\"\n  ],\n  \"mode\": \"standard\",\n  \"format\": \"json\",\n  \"max_concurrent\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract/batch",
+              "host": ["{{base_url}}"],
+              "path": ["extract", "batch"]
+            },
+            "description": "Extract content from multiple sources in a single request"
+          },
+          "response": [
+            {
+              "name": "Batch Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"results\": [\n    {\n      \"source\": \"https://example.com/article1\",\n      \"success\": true,\n      \"result\": { \"title\": \"Article 1\", \"content\": \"...\" }\n    },\n    {\n      \"source\": \"https://example.com/article2\",\n      \"success\": true,\n      \"result\": { \"title\": \"Article 2\", \"content\": \"...\" }\n    },\n    {\n      \"source\": \"https://example.com/article3\",\n      \"success\": false,\n      \"error\": \"Failed to fetch URL\"\n    }\n  ],\n  \"summary\": {\n    \"total\": 3,\n    \"succeeded\": 2,\n    \"failed\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Compare Original vs Compressed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"https://example.com/news/article\",\n  \"mode\": \"standard\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/compare",
+              "host": ["{{base_url}}"],
+              "path": ["compare"]
+            },
+            "description": "Get a side-by-side comparison of original vs compressed content"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Digest",
+      "description": "Multi-source digest generation endpoints",
+      "item": [
+        {
+          "name": "Generate Digest from RSS Feeds",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sources\": [\n    {\n      \"type\": \"rss\",\n      \"url\": \"https://news.ycombinator.com/rss\",\n      \"name\": \"Hacker News\"\n    },\n    {\n      \"type\": \"rss\",\n      \"url\": \"https://feeds.bbci.co.uk/news/technology/rss.xml\",\n      \"name\": \"BBC Tech\"\n    }\n  ],\n  \"mode\": \"standard\",\n  \"format\": \"markdown\",\n  \"max_articles\": 20,\n  \"cluster_threshold\": 0.7\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/digest",
+              "host": ["{{base_url}}"],
+              "path": ["digest"]
+            },
+            "description": "Generate a digest from multiple RSS feeds"
+          },
+          "response": [
+            {
+              "name": "Digest Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"digest\": {\n    \"title\": \"News Digest - January 15, 2024\",\n    \"generated_at\": \"2024-01-15T10:30:00Z\",\n    \"content\": \"# News Digest\\n\\n## Technology\\n\\n...\",\n    \"sections\": [\n      {\n        \"topic\": \"Technology\",\n        \"articles\": [\n          {\n            \"title\": \"Tech Company Announces New Product\",\n            \"source\": \"Hacker News\",\n            \"summary\": \"Compressed summary...\",\n            \"url\": \"https://example.com/article\"\n          }\n        ]\n      }\n    ],\n    \"statistics\": {\n      \"total_articles\": 40,\n      \"articles_included\": 15,\n      \"clusters\": 5,\n      \"total_original_words\": 20000,\n      \"total_compressed_words\": 3000,\n      \"overall_compression\": 0.15\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Generate Digest with Mixed Sources",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sources\": [\n    {\n      \"type\": \"rss\",\n      \"url\": \"https://feeds.bbci.co.uk/news/rss.xml\",\n      \"name\": \"BBC News\"\n    },\n    {\n      \"type\": \"url\",\n      \"url\": \"https://example.com/special-report\",\n      \"name\": \"Special Report\"\n    }\n  ],\n  \"mode\": \"standard\",\n  \"format\": \"json\",\n  \"max_articles\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/digest",
+              "host": ["{{base_url}}"],
+              "path": ["digest"]
+            },
+            "description": "Generate a digest from mixed source types (RSS + URLs)"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Aggressive Digest",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sources\": [\n    {\n      \"type\": \"rss\",\n      \"url\": \"https://news.ycombinator.com/rss\",\n      \"name\": \"Hacker News\"\n    }\n  ],\n  \"mode\": \"aggressive\",\n  \"format\": \"text\",\n  \"max_articles\": 50,\n  \"cluster_threshold\": 0.5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/digest",
+              "host": ["{{base_url}}"],
+              "path": ["digest"]
+            },
+            "description": "Generate a heavily compressed digest with aggressive mode"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "description": "Example error responses",
+      "item": [
+        {
+          "name": "Invalid URL Format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"not-a-valid-url\",\n  \"mode\": \"standard\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract",
+              "host": ["{{base_url}}"],
+              "path": ["extract"]
+            },
+            "description": "Example of validation error for invalid URL"
+          },
+          "response": [
+            {
+              "name": "Validation Error",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"error\": \"validation_error\",\n  \"message\": \"Invalid source URL format\",\n  \"details\": {\n    \"field\": \"source\",\n    \"reason\": \"Must be a valid URL or text content\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Empty Sources Array",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sources\": [],\n  \"mode\": \"standard\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/extract/batch",
+              "host": ["{{base_url}}"],
+              "path": ["extract", "batch"]
+            },
+            "description": "Example of validation error for empty sources"
+          },
+          "response": [
+            {
+              "name": "Validation Error",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"error\": \"validation_error\",\n  \"message\": \"Sources array cannot be empty\",\n  \"details\": {\n    \"field\": \"sources\",\n    \"reason\": \"At least one source is required\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
