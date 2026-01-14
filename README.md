@@ -1165,21 +1165,25 @@ See [k8s/](./k8s/) for Helm charts and manifests.
 - [x] RSS ingestion
 - [x] Markdown/JSON output
 
-### v0.2
-- [ ] REST API
+### v0.2 (In Progress)
+- [x] REST API with FastAPI
+- [x] API authentication (API keys)
+- [x] Rate limiting middleware
+- [x] Storage layer (cache, database)
+- [x] Email delivery integration
+- [x] Topic clustering
+- [x] End-to-end test suite
 - [ ] Browser extension
-- [ ] Email delivery
-- [ ] Topic clustering
 
 ### v0.3
-- [ ] Real-time monitoring
-- [ ] Telegram/Slack bots
-- [ ] Alert system
+- [x] Telegram/Slack integrations
+- [x] Monitoring utilities (health checks, alerts)
+- [ ] Real-time monitoring UI
 - [ ] Analytics dashboard
 
 ### v0.4
-- [ ] NewsAPI integration
-- [ ] Twitter/X ingestion
+- [x] NewsAPI integration
+- [x] Twitter/X integration
 - [ ] Podcast transcript support
 - [ ] Multi-language (ES, FR, DE)
 
@@ -1262,8 +1266,26 @@ newsdigest/
 │   ├── parsers/        # Content parsing
 │   ├── formatters/     # Output formatting
 │   ├── digest/         # Digest generation
-│   └── api/            # REST API
+│   ├── api/            # REST API
+│   │   ├── routes/     # API endpoints
+│   │   ├── middleware.py  # Auth, rate limiting, tracking
+│   │   └── utils.py    # Shared utilities
+│   ├── storage/        # Storage layer
+│   │   ├── cache.py    # Memory and file caching
+│   │   ├── database.py # SQLite persistence
+│   │   └── analytics.py # Analytics storage
+│   ├── integrations/   # External integrations
+│   │   ├── email.py    # Email notifications
+│   │   ├── newsapi.py  # NewsAPI client
+│   │   ├── twitter.py  # Twitter/X integration
+│   │   ├── telegram.py # Telegram bot
+│   │   └── slack.py    # Slack integration
+│   └── utils/          # Utilities
+│       └── monitoring.py # Health checks, alerts, metrics
 ├── tests/              # Test suite
+│   ├── unit/           # Unit tests
+│   ├── integration/    # Integration tests
+│   └── e2e/            # End-to-end tests
 ├── docs/               # Documentation
 └── docker/             # Docker configuration
 ```
@@ -1279,6 +1301,39 @@ make type-check    # Run mypy
 make check         # Run all checks
 make docs-serve    # Serve documentation locally
 ```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run only unit tests
+pytest tests/unit/
+
+# Run only integration tests
+pytest tests/integration/
+
+# Run only end-to-end tests
+pytest tests/e2e/
+
+# Run specific E2E test file
+pytest tests/e2e/test_middleware.py -v
+
+# Run with coverage report
+pytest --cov=newsdigest --cov-report=html
+```
+
+#### E2E Test Suite
+
+The end-to-end test suite (`tests/e2e/`) includes:
+
+| Test File | Description |
+|-----------|-------------|
+| `test_extraction_pipeline.py` | Tests complete extraction flow, compression, and formatters |
+| `test_api_endpoints.py` | Tests REST API endpoints (health, extract, compare, digest) |
+| `test_storage.py` | Tests cache, database persistence, and analytics storage |
+| `test_middleware.py` | Tests API authentication, rate limiting, and request tracking |
 
 ### Docker Development
 

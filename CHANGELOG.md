@@ -8,10 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- End-to-end test suite with comprehensive tests:
+  - `test_extraction_pipeline.py` - Extraction flow and formatters
+  - `test_api_endpoints.py` - REST API endpoint testing
+  - `test_storage.py` - Cache, database, and analytics storage
+  - `test_middleware.py` - Auth, rate limiting, and request tracking
 - REST API with FastAPI (endpoints: /health, /extract, /extract/batch, /digest, /compare)
+- API middleware for authentication, rate limiting, and request tracking:
+  - `APIKeyManager` - API key creation, validation, and revocation
+  - `RateLimiter` - Token bucket rate limiting algorithm
+  - `RequestTracker` - Request metrics collection
 - Storage layer with MemoryCache, FileCache, AnalyticsStore, and SourceStore
+- SQLite database persistence layer (`Database` class)
+- Monitoring utilities (`HealthMonitor`, `AlertManager`, `MetricsCollector`)
+- External integrations:
+  - Email notifications (`EmailNotifier`)
+  - NewsAPI client (`NewsAPIClient`)
+  - Twitter/X integration (`TwitterClient`)
+  - Telegram bot integration (`TelegramBot`)
+  - Slack integration (`SlackNotifier`)
 - CLI commands: extract, compare, stats, digest, sources, watch, analytics, setup
+- `ValidationError` exception for input validation
 - Polyform Small Business License 1.0.0
+
+### Fixed
+- Circular import in API routes (moved `get_config` to `api/utils.py`)
+- Linting issues in API routes and middleware
 
 ## [0.1.0] - 2024-01-15
 

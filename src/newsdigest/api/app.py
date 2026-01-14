@@ -1,7 +1,7 @@
 """FastAPI application for NewsDigest."""
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,7 +47,7 @@ def create_app(
     Returns:
         Configured FastAPI application.
     """
-    from newsdigest.api.middleware import (
+    from newsdigest.api.middleware import (  # noqa: PLC0415
         AuthMiddleware,
         RateLimitMiddleware,
         RequestTrackingMiddleware,
@@ -81,7 +81,7 @@ def create_app(
     # Authentication
     app.add_middleware(AuthMiddleware, enabled=enable_auth)
 
-    # CORS (innermost)
+    # CORS (innermost)  # noqa: ERA001
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -184,13 +184,5 @@ def _register_exception_handlers(app: FastAPI) -> None:
 app = create_app()
 
 
-def get_config(request: Request) -> Config:
-    """Get configuration from request state.
-
-    Args:
-        request: FastAPI request object.
-
-    Returns:
-        Configuration object.
-    """
-    return getattr(request.app.state, "config", Config())
+# Re-export get_config for backwards compatibility
+from newsdigest.api.utils import get_config  # noqa: E402, F401

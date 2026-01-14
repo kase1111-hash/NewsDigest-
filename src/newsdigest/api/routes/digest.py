@@ -1,10 +1,9 @@
 """Digest generation endpoint for NewsDigest API."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Request
 
-from newsdigest.api.app import get_config
 from newsdigest.api.models import (
     DigestArticle,
     DigestContent,
@@ -14,7 +13,9 @@ from newsdigest.api.models import (
     DigestStatistics,
     SourceType,
 )
+from newsdigest.api.utils import get_config
 from newsdigest.digest.generator import DigestGenerator
+
 
 router = APIRouter()
 
@@ -94,8 +95,8 @@ async def generate_digest(
         content_lines.append("")
 
     digest_content = DigestContent(
-        title=f"News Digest - {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
-        generated_at=datetime.now(timezone.utc),
+        title=f"News Digest - {datetime.now(UTC).strftime('%Y-%m-%d')}",
+        generated_at=datetime.now(UTC),
         content="\n".join(content_lines),
         sections=sections,
         statistics=statistics,
