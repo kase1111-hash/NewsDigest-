@@ -1,9 +1,12 @@
 """FastAPI application for NewsDigest."""
 
+import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+
+logger = logging.getLogger(__name__)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -81,13 +84,20 @@ def create_app(
     # Authentication
     app.add_middleware(AuthMiddleware, enabled=enable_auth)
 
-    # CORS (innermost)  # noqa: ERA001
+    # CORS (innermost)
+    # Note: allow_credentials=True with allow_origins=["*"] is a security risk.
+    # Configure specific origins in production via config.cors_origins.
+    cors_origins = (
+        config.cors_origins
+        if config and hasattr(config, "cors_origins") and config.cors_origins
+        else ["http://localhost:3000", "http://localhost:8000"]
+    )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=cors_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "X-API-Key"],
     )
 
     # Register exception handlers
@@ -171,6 +181,12 @@ def _register_exception_handlers(app: FastAPI) -> None:
     async def generic_error_handler(
         request: Request, exc: Exception
     ) -> JSONResponse:
+        # Log the exception with full traceback for debugging
+        logger.exception(
+            "Unexpected error during request to %s: %s",
+            request.url.path,
+            str(exc),
+        )
         return JSONResponse(
             status_code=500,
             content=ErrorResponse(

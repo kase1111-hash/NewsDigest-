@@ -1,9 +1,12 @@
 """Extraction endpoints for NewsDigest API."""
 
 import asyncio
+import logging
 import time
 
 from fastapi import APIRouter, Request
+
+logger = logging.getLogger(__name__)
 
 from newsdigest.api.models import (
     BatchExtractionRequest,
@@ -179,6 +182,8 @@ async def extract_batch(
                     result=api_result,
                 )
             except Exception as e:
+                # Log the full exception for debugging
+                logger.exception("Batch extraction failed for source %s", source)
                 return BatchResultItem(
                     source=source,
                     success=False,

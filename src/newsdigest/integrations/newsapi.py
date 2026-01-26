@@ -397,3 +397,11 @@ class NewsAPIIngestor:
     async def close(self) -> None:
         """Close the client."""
         await self._client.close()
+
+    async def __aenter__(self) -> "NewsAPIIngestor":
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, *args: Any) -> None:
+        """Async context manager exit."""
+        await self.close()

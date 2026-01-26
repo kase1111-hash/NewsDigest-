@@ -46,6 +46,31 @@ class URLFetcher(BaseIngestor):
 
         self._article_extractor = ArticleExtractor(config)
         self._domain_last_request: dict[str, float] = {}
+        self._client: httpx.AsyncClient | None = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        """Get or create the HTTP client (connection pooling)."""
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(
+                timeout=self.timeout,
+                follow_redirects=True,
+                headers={"User-Agent": self.user_agent},
+            )
+        return self._client
+
+    async def close(self) -> None:
+        """Close the HTTP client."""
+        if self._client and not self._client.is_closed:
+            await self._client.aclose()
+            self._client = None
+
+    async def __aenter__(self) -> "URLFetcher":
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, *args: object) -> None:
+        """Async context manager exit."""
+        await self.close()
 
     async def ingest(self, source: str) -> Article:
         """Fetch and parse article from URL.
@@ -116,16 +141,12 @@ class URLFetcher(BaseIngestor):
         await self._rate_limit(url)
 
         last_error = None
+        client = await self._get_client()
         for attempt in range(self.retries):
             try:
-                async with httpx.AsyncClient(
-                    timeout=self.timeout,
-                    follow_redirects=True,
-                ) as client:
-                    headers = {"User-Agent": self.user_agent}
-                    response = await client.get(url, headers=headers)
-                    response.raise_for_status()
-                    return response.text
+                response = await client.get(url)
+                response.raise_for_status()
+                return response.text
 
             except httpx.HTTPStatusError as e:
                 last_error = e

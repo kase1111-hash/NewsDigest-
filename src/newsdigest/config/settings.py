@@ -64,15 +64,18 @@ class Config(BaseModel):
     # NLP settings
     spacy_model: str = "en_core_web_sm"
 
-    # HTTP settings
-    http_timeout: int = 30
-    http_retries: int = 3
-    requests_per_second: float = 1.0
+    # HTTP settings with bounds checking
+    http_timeout: int = Field(default=30, ge=1, le=300)
+    http_retries: int = Field(default=3, ge=0, le=10)
+    requests_per_second: float = Field(default=1.0, gt=0, le=100)
 
-    # Cache settings
+    # Cache settings with bounds checking
     cache_enabled: bool = True
-    cache_ttl: int = 3600
-    cache_max_size: int = 1000
+    cache_ttl: int = Field(default=3600, ge=0, le=86400)  # Max 24 hours
+    cache_max_size: int = Field(default=1000, ge=1, le=100000)
+
+    # CORS settings for API
+    cors_origins: list[str] = Field(default_factory=list)
 
     @classmethod
     def from_file(cls, path: str | Path) -> "Config":
