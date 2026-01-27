@@ -667,6 +667,9 @@ class Database:
         with self._get_connection() as conn:
             conn.execute("VACUUM")
 
+    # Allowed table names for validation (prevents SQL injection)
+    ALLOWED_TABLES = frozenset(["extractions", "sources", "cache", "api_keys"])
+
     def get_stats(self) -> dict[str, int]:
         """Get database statistics.
 
@@ -679,7 +682,8 @@ class Database:
             cursor = conn.cursor()
 
             stats = {}
-            for table in ["extractions", "sources", "cache", "api_keys"]:
+            for table in self.ALLOWED_TABLES:
+                # Table name validated against ALLOWED_TABLES whitelist
                 cursor.execute(f"SELECT COUNT(*) FROM {table}")  # noqa: S608
                 stats[table] = cursor.fetchone()[0]
 

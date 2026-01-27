@@ -8,6 +8,7 @@ This module provides a shared async HTTP client with:
 """
 
 import asyncio
+import time
 from typing import Any
 
 import httpx
@@ -30,14 +31,14 @@ class RateLimiter:
     async def acquire(self) -> None:
         """Wait if necessary to respect rate limit."""
         async with self._lock:
-            now = asyncio.get_event_loop().time()
+            now = time.monotonic()
             elapsed = now - self._last_request_time
             wait_time = self.min_interval - elapsed
 
             if wait_time > 0:
                 await asyncio.sleep(wait_time)
 
-            self._last_request_time = asyncio.get_event_loop().time()
+            self._last_request_time = time.monotonic()
 
 
 class RetryConfig:
