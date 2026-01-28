@@ -63,7 +63,7 @@ class QuoteIsolator(BaseAnalyzer):
         # Track context for circular quote detection
         recent_content: list[str] = []
 
-        for i, sentence in enumerate(sentences):
+        for sentence in sentences:
             if not sentence.keep:
                 continue
 
@@ -149,10 +149,7 @@ class QuoteIsolator(BaseAnalyzer):
             return True
 
         # Check for single quotes used as quote marks
-        if re.search(r"'[^']{10,}'", text):  # At least 10 chars in quotes
-            return True
-
-        return False
+        return bool(re.search(r"'[^']{10,}'", text))  # At least 10 chars in quotes
 
     def _is_attributed(self, text: str) -> bool:
         """Check if quote is attributed.
@@ -163,9 +160,8 @@ class QuoteIsolator(BaseAnalyzer):
         Returns:
             True if attribution found.
         """
-        for pattern in self._attribution_patterns:
-            if pattern.search(text):
-                return True
+        if any(pattern.search(text) for pattern in self._attribution_patterns):
+            return True
 
         # Also check for simple attribution verbs near quotes
         attribution_verbs = [
@@ -173,11 +169,7 @@ class QuoteIsolator(BaseAnalyzer):
             "claimed", "reported", "confirmed", "denied", "added", "wrote",
         ]
         text_lower = text.lower()
-        for verb in attribution_verbs:
-            if verb in text_lower:
-                return True
-
-        return False
+        return any(verb in text_lower for verb in attribution_verbs)
 
     def _extract_quoted_content(self, text: str) -> str | None:
         """Extract quoted content from text.

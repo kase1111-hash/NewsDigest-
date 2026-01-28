@@ -224,9 +224,7 @@ class SpeculationStripper(BaseAnalyzer):
                 markers.append(clean_word)
 
         # Check hedging words
-        for hedge in HEDGING_WORDS:
-            if hedge in text:
-                markers.append(hedge)
+        markers.extend(hedge for hedge in HEDGING_WORDS if hedge in text)
 
         # Check uncertainty phrases
         for pattern in self._uncertainty_patterns:

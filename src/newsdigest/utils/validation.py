@@ -308,7 +308,7 @@ def validate_range(
     try:
         num_value = float(value)
     except (TypeError, ValueError) as e:
-        raise ValidationError(f"{name} must be a number: {e}", field=name)
+        raise ValidationError(f"{name} must be a number: {e}", field=name) from e
 
     if min_val is not None and num_value < min_val:
         raise ValidationError(f"{name} must be at least {min_val}", field=name)
@@ -338,14 +338,13 @@ def validate_positive_int(
     try:
         int_value = int(value)
     except (TypeError, ValueError) as e:
-        raise ValidationError(f"{name} must be an integer: {e}", field=name)
+        raise ValidationError(f"{name} must be an integer: {e}", field=name) from e
 
     if allow_zero:
         if int_value < 0:
             raise ValidationError(f"{name} must be non-negative", field=name)
-    else:
-        if int_value <= 0:
-            raise ValidationError(f"{name} must be positive", field=name)
+    elif int_value <= 0:
+        raise ValidationError(f"{name} must be positive", field=name)
 
     return int_value
 

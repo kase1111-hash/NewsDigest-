@@ -224,9 +224,7 @@ class EmotionalDetector(BaseAnalyzer):
                 emotional_found.append(word)
 
         # Check urgency phrases
-        for urgency in self._urgency_words:
-            if urgency in text:
-                emotional_found.append(urgency)
+        emotional_found.extend(urgency for urgency in self._urgency_words if urgency in text)
 
         # Check for ALL CAPS (using shared utility)
         if is_all_caps(sentence.text, threshold=0.3):

@@ -189,10 +189,7 @@ class SourceValidator(BaseAnalyzer):
             return False
 
         # Should start with capital letter
-        if not name_clean[0].isupper():
-            return False
-
-        return True
+        return name_clean[0].isupper()
 
     def _has_unnamed_source(self, text: str) -> bool:
         """Check if text references unnamed sources.
@@ -204,10 +201,7 @@ class SourceValidator(BaseAnalyzer):
             True if unnamed source reference found.
         """
         text_lower = text.lower()
-        for pattern in self._unnamed_patterns:
-            if pattern.search(text_lower):
-                return True
-        return False
+        return any(pattern.search(text_lower) for pattern in self._unnamed_patterns)
 
     def get_source_warnings(self, sentences: list[Sentence]) -> list[dict]:
         """Generate warnings for unnamed sources.
