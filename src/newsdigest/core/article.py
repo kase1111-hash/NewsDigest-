@@ -1,8 +1,13 @@
 """Article data structures for NewsDigest."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
+
+
+def _utc_now() -> datetime:
+    """Return current UTC time (timezone-aware)."""
+    return datetime.now(timezone.utc)
 
 
 class SourceType(Enum):
@@ -32,7 +37,7 @@ class Article:
     source_type: SourceType = SourceType.URL
     author: str | None = None
     published_at: datetime | None = None
-    fetched_at: datetime = field(default_factory=datetime.utcnow)
+    fetched_at: datetime = field(default_factory=_utc_now)
 
     # Computed fields
     word_count: int = 0

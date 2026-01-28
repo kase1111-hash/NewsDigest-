@@ -319,12 +319,15 @@ def validate_range(
     return num_value
 
 
-def validate_positive_int(value: Any, name: str = "value") -> int:
+def validate_positive_int(
+    value: Any, name: str = "value", allow_zero: bool = False
+) -> int:
     """Validate value is a positive integer.
 
     Args:
         value: Value to validate.
         name: Name for error messages.
+        allow_zero: If True, zero is allowed. Default is False.
 
     Returns:
         Validated value as int.
@@ -337,8 +340,12 @@ def validate_positive_int(value: Any, name: str = "value") -> int:
     except (TypeError, ValueError) as e:
         raise ValidationError(f"{name} must be an integer: {e}", field=name)
 
-    if int_value < 0:
-        raise ValidationError(f"{name} must be non-negative", field=name)
+    if allow_zero:
+        if int_value < 0:
+            raise ValidationError(f"{name} must be non-negative", field=name)
+    else:
+        if int_value <= 0:
+            raise ValidationError(f"{name} must be positive", field=name)
 
     return int_value
 

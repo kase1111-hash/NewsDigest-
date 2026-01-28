@@ -291,6 +291,22 @@ class Extractor:
         # Just ensure original_text is populated
         return result
 
+    def extract_text(self, text: str) -> ExtractionResult:
+        """Extract content from plain text input.
+
+        Synchronous method for processing raw text content directly.
+
+        Args:
+            text: Plain text content to process.
+
+        Returns:
+            ExtractionResult with compressed content and statistics.
+
+        Raises:
+            ExtractionError: If content cannot be processed.
+        """
+        return self.extract_sync(text)
+
     async def _ingest_source(self, source: str) -> Article:
         """Determine source type and ingest content.
 
