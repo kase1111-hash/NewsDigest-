@@ -238,10 +238,7 @@ class ClaimExtractor(BaseAnalyzer):
             True if attribution found.
         """
         text_lower = text.lower()
-        for verb in ATTRIBUTION_VERBS:
-            if verb in text_lower:
-                return True
-        return False
+        return any(verb in text_lower for verb in ATTRIBUTION_VERBS)
 
     def _is_declarative(self, text: str) -> bool:
         """Check if sentence is declarative.

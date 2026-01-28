@@ -127,10 +127,12 @@ class FillerDetector(BaseAnalyzer):
 
         # Check for very short sentences with no entities
         words = text.split()
-        if len(words) < self.min_word_count:
-            # Allow short sentences with entities or quotes
-            if not sentence.entities and '"' not in text and "'" not in text:
-                return True, RemovalReason.LOW_DENSITY.value
+        # Allow short sentences with entities or quotes
+        if (len(words) < self.min_word_count
+                and not sentence.entities
+                and '"' not in text
+                and "'" not in text):
+            return True, RemovalReason.LOW_DENSITY.value
 
         # Check entity density for longer sentences
         if len(words) >= 10:

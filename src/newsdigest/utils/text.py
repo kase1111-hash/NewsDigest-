@@ -5,8 +5,11 @@ analyzers and components. Centralizing these utilities ensures consistency
 and reduces code duplication (DRY principle).
 """
 
-import re
-from re import Pattern
+import re  # noqa: I001
+
+# Punctuation characters to strip from words (deduplicated set)
+# Includes standard ASCII and common Unicode punctuation
+PUNCTUATION_CHARS = ".,!?;:'\"()-[]{}«»""''…—-"
 
 
 # =============================================================================
@@ -62,7 +65,13 @@ def strip_punctuation(word: str) -> str:
     Returns:
         Word with punctuation stripped.
     """
-    return word.strip(".,!?;:'\"()-[]{}«»""''…—–")
+    # Strip characters one by one from start and end
+    result = word
+    while result and result[0] in PUNCTUATION_CHARS:
+        result = result[1:]
+    while result and result[-1] in PUNCTUATION_CHARS:
+        result = result[:-1]
+    return result
 
 
 def normalize_whitespace(text: str) -> str:
@@ -131,7 +140,7 @@ def word_count(text: str) -> int:
 # PATTERN MATCHING UTILITIES
 # =============================================================================
 
-def compile_patterns(patterns: list[str], flags: int = re.IGNORECASE) -> list[Pattern]:
+def compile_patterns(patterns: list[str], flags: int = re.IGNORECASE) -> list[re.Pattern[str]]:
     """Compile a list of regex patterns.
 
     Args:
@@ -144,7 +153,7 @@ def compile_patterns(patterns: list[str], flags: int = re.IGNORECASE) -> list[Pa
     return [re.compile(p, flags) for p in patterns]
 
 
-def match_any_pattern(text: str, patterns: list[Pattern]) -> bool:
+def match_any_pattern(text: str, patterns: list[re.Pattern[str]]) -> bool:
     """Check if text matches any of the patterns.
 
     Args:
@@ -154,13 +163,10 @@ def match_any_pattern(text: str, patterns: list[Pattern]) -> bool:
     Returns:
         True if any pattern matches.
     """
-    for pattern in patterns:
-        if pattern.search(text):
-            return True
-    return False
+    return any(pattern.search(text) for pattern in patterns)
 
 
-def find_all_matches(text: str, patterns: list[Pattern]) -> list[str]:
+def find_all_matches(text: str, patterns: list[re.Pattern[str]]) -> list[str]:
     """Find all pattern matches in text.
 
     Args:
@@ -170,10 +176,9 @@ def find_all_matches(text: str, patterns: list[Pattern]) -> list[str]:
     Returns:
         List of matched strings.
     """
-    matches = []
+    matches: list[str] = []
     for pattern in patterns:
-        for match in pattern.finditer(text):
-            matches.append(match.group())
+        matches.extend(match.group() for match in pattern.finditer(text))
     return matches
 
 
